@@ -1,0 +1,246 @@
+.chat-wrapper {
+    height: 100vh;
+    width: 100%;
+}
+
+.side-menu {
+    width: 300px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    /* padding: 16px; */
+}
+
+.side-menu .head-ct {
+    padding: 20px 15px;
+    height: 122px;
+}
+
+.filter-text {
+    font-size: 18px;
+}
+
+.filter-icon {
+    font-size: 24px;
+}
+
+.search-bar {
+    border: 1px solid rgba(0, 0, 0, 0.503);
+    padding: 3px 15px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+}
+
+.search-bar input {
+    flex: 1;
+    border-color: transparent;
+    outline: none;
+}
+
+.chat-el-container {
+    background-color: hsl(0, 0%, 94%);
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: calc(100% - 122px)
+}
+
+.chat-el {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    background-color: hsl(0, 0%, 100%);
+    padding: 10px;
+    border-radius: 10px;
+    /* margin-top: 20px; */
+}
+
+.chat-el-title {
+    font-size: 18px;
+}
+
+.chat-el-desc-text {
+    font-size: 15px;
+    color: rgba(0, 0, 0, 0.503);
+    margin-top: 2px;
+}
+
+.chat-profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.un-msg-text {
+    background-color: rgba(122, 29, 172, 0.902);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 14px;
+
+}
+
+.chat-main-container {
+    /* background-color: rgb(147 147 147 / 27%); */
+    flex: 1;
+}
+
+.chat-main-container .head-ct {
+    height: 70px;
+    padding: 0px 20px;
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.403); */
+    background-color: rgb(147 147 147 / 20%);
+}
+
+
+.fr-name {
+    margin: 0;
+    font-size: 22px;
+}
+
+.duration-sn {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+}
+
+.chat-main-container .head-ct i {
+    font-size: 22px;
+    color: rgba(0, 0, 0, 0.403);
+}
+
+.profile-icon-span {
+    width: 35px;
+    height: 35px;
+    background-color: rgba(0, 0, 0, 0.203);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.chat-box {
+    height: calc(100% - 125px);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap : 10px;
+}
+
+.message-item {
+    background-color: rgba(123, 222, 123, 0.475);
+    padding: 10px;
+    border-radius: 10px;
+    /* border-top-right-radius: 0px; */
+}
+
+.message-item.sent {
+    margin-left: auto;
+    text-align: right;
+    background-color: #a4f76481;
+    border-top-right-radius: 0px;
+}
+
+.message-item.sent .email-txt{
+    text-align: left;
+}
+
+.message-item.received {
+    margin-right: auto;
+    text-align: left;
+    background-color: #c5e0de;;
+    border-top-left-radius: 0px;
+}
+
+.message-item.received .email-txt{
+    text-align: right;
+}
+
+.email-txt,
+.message-txt {
+    display: block;
+}
+
+.email-txt {
+    color: hsla(0, 0%, 14%, .6);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.message-txt {
+    font-size: 18px;
+}
+
+.chat-main-container .message-box {
+    height: 55px;
+    background-color: rgb(147 147 147 / 20%);
+    display: flex;
+    align-items: center;
+    padding: 0px 20px;
+}
+
+.doc-btn {
+    rotate: 45deg;
+}
+
+.doc-btn i {
+    font-size: 22px;
+}
+
+.chat-main-container .message-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background-color: transparent;
+}
+
+.send-btn {
+    outline: none;
+    border: none;
+    background-color: hsl(0, 0%, 100%);
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.profile {
+    position: relative;
+}
+
+.profile-box {
+    position: absolute;
+    top: 110%;
+    right: 0%;
+    /* transform: translateX(-50%); */
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 1px solid #ccc;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 7px;
+}
+
+.img-pl {
+    width: 30px;
+    height: 30px;
+    display: block;
+    border-radius: 50%;
+    background-color: rgba(8, 8, 8, 0.382);
+    margin: 0 auto;
+}
+
+.logout-btn {
+    background-color: rgb(158, 1, 1);
+    color: white;
+    width: 100%;
+    border-radius: 5px;
+    padding: 3px;
+
+}
