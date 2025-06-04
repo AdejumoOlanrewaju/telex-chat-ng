@@ -17,42 +17,28 @@
         </div>
 
         <div class="chat-el-container">
-            <div class="chat-el">
-                <div class="d-flex align-items-center gap-2">
-                    <img class="chat-profile-img" src="assets/img/pexels-hasibullah-zhowandai-248954-819530.jpg"
-                        alt="chat user profile image">
+            @for(user of signedInUsers; track $index){
+                <div class="chat-el" (click) = "selectUser(user)">
+                    <div class="d-flex align-items-center gap-2">
+                        <img class="chat-profile-img" [src]="user.profilePic" alt="chat user profile image">
+                        <div class="d-flex flex-column">
+                            <h5 class="mb-0 chat-el-title">{{ user.displayName }}</h5>
+                            <span class="chat-el-desc-text">Hi Jonathan, how are...</span>
+                        </div>
+                    </div>
+    
                     <div class="d-flex flex-column">
-                        <h5 class="mb-0 chat-el-title">Edward Mendy</h5>
-                        <span class="chat-el-desc-text">Super I will get...</span>
+                        <span class="time-text">5 min</span>
+                        <span class="un-msg-text">4</span>
                     </div>
                 </div>
-
-                <div class="d-flex flex-column">
-                    <span class="time-text">1 min</span>
-                    <span class="un-msg-text">2</span>
-                </div>
-            </div>
-
-            <div class="chat-el">
-                <div class="d-flex align-items-center gap-2">
-                    <img class="chat-profile-img" src="assets/img/pexels-olly-840916.jpg" alt="chat user profile image">
-                    <div class="d-flex flex-column">
-                        <h5 class="mb-0 chat-el-title">Jonathan Chris</h5>
-                        <span class="chat-el-desc-text">Hi Jonathan, how are...</span>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-column">
-                    <span class="time-text">5 min</span>
-                    <span class="un-msg-text">4</span>
-                </div>
-            </div>
+            }
         </div>
     </div>
     <div class="chat-main-container">
         <div class="head-ct d-flex justify-content-between align-items-center">
             <div class="d-flex flex-column gap-1">
-                <h5 class="fr-name">Lucida Mcguire</h5>
+                <h5 class="fr-name">{{ userVar.displayName }}</h5>
                 <span class="duration-sn">Last seen 5 hours ago</span>
             </div>
 
@@ -75,8 +61,8 @@
         </div>
 
         <div class="chat-box">
-            <div *ngFor="let m of messages;">
-                <div  [ngClass]="isCurrentUser()  ? 'message-item sent' : 'message-item received' ">
+            <div *ngFor="let m of this.chatService.messages();">
+                <div  [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
                     <span class="email-txt">{{m.email}}</span>
                     <span class="message-txt">{{m.text}}</span>
                     <!-- <span>{{m.status}}</span> -->

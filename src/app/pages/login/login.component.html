@@ -1,17 +1,26 @@
- <div class="container mt-5" style="max-width: 400px;">
-      <h2 class="mb-4 text-center">Login</h2>
-      <form (ngSubmit)="login()">
-        <div class="mb-3">
-          <label class="form-label">Email</label>
-          <input [formControl]="emailControl" type="email" class="form-control" placeholder="Enter email" />
+<div class="d-flex form-page align-items-center full-h-vh ">
+    <div class="w-100 position-relative position-wrapper-util mt-5">
+        <div class="gradient-ball first"></div>
+        <div class="form-wrapper ">
+            <h2 class="form-title mb-4 text-center">Login</h2>
+            <form (ngSubmit)="login()">
+              
+                <div class="mb-3">
+                    <label for="exampleInputEmail1" class="form-label">Email address</label>
+                    <input [formControl] = "emailControl" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="InputPassword1" class="form-label">Password</label>
+                    <input [formControl] = "passwordControl" type="password" class="form-control" id="InputPassword1">
+                </div>
+               
+                <button type="submit" class="btn btn-primary block w-100 mt-3">Submit</button>
+            </form>
+            <p class="lg-cta mt-4 text-end">
+                Don't have an account? <a routerLink="/signup">Signup</a>
+            </p>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input [formControl]="passwordControl" type="password" class="form-control" placeholder="Enter password" />
-        </div>
-        <button type="submit" class="btn btn-primary w-100" [disabled]="!formValid()">Login</button>
-      </form>
-      <p class="mt-3 text-center">
-        Don't have an account? <a routerLink="/signup">Signup</a>
-      </p>
+        <div class="gradient-ball second"></div>
     </div>
+</div>

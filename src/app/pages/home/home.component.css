@@ -146,7 +146,7 @@
 .message-item.sent {
     margin-left: auto;
     text-align: right;
-    background-color: #a4f76481;
+    background-color: #4af4053b;
     border-top-right-radius: 0px;
 }
 
@@ -157,7 +157,7 @@
 .message-item.received {
     margin-right: auto;
     text-align: left;
-    background-color: #c5e0de;;
+    background-color: #00a4e133;
     border-top-left-radius: 0px;
 }
 
@@ -171,7 +171,7 @@
 }
 
 .email-txt {
-    color: hsla(0, 0%, 14%, .6);
+    color: hsla(0, 0%, 14%, 0.706);
     font-size: 12px;
     margin-bottom: 5px;
 }
@@ -244,3 +244,4 @@
     padding: 3px;
 
 }
+

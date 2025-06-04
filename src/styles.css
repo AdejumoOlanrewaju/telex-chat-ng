@@ -45,3 +45,7 @@ svg{
   width: 20px;
   height: 20px;
 }
+
+.full-h-vh{
+  height : 100vh;
+}

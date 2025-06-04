@@ -1,7 +1,9 @@
 import { Component, inject } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, onAuthStateChanged } from '@angular/fire/auth';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../../services/chat.service';
 
 @Component({
   selector: 'app-signup',
@@ -13,22 +15,18 @@ export class SignupComponent {
   constructor() { }
   private auth = inject(Auth)
   private router = inject(Router)
+  private authService = inject(AuthService)
+  private chatService = inject(ChatService)
 
 
   protected nameControl = new FormControl('', [Validators.required])
   protected emailControl = new FormControl('', [Validators.required, Validators.email])
   protected passwordControl = new FormControl('', [Validators.required, Validators.minLength(6)])
+  protected profilePicControl = new FormControl('')
 
   async signup() {
-    try {
-      const email = this.emailControl.value!;
-      const password = this.passwordControl.value!
-
-      await createUserWithEmailAndPassword(this.auth, email, password)
-      this.router.navigate(['/login'])
-    } catch (err) {
-      throw (err)
-    }
+    this.authService.signup(this.emailControl, this.passwordControl, this.nameControl,
+this.profilePicControl )
 
   }
 
