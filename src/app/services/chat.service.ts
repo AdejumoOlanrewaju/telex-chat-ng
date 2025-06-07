@@ -6,10 +6,11 @@ import { Auth, User } from '@angular/fire/auth';
 })
 export class ChatService {
   messages = signal<any[]>([])
-  private unsubscribedMessages : (() =>  void) | null = null
-  constructor(private db: Firestore, private auth: Auth) {}
+  lastMessage = signal<any>(null)
+  private unsubscribedMessages: (() => void) | null = null
+  constructor(private db: Firestore, private auth: Auth) { }
 
-  async storeUsersInfo(user: any, displayName : string | null, email : string | null, photoURL : string | null) {
+  async storeUsersInfo(user: any, displayName: string | null, email: string | null, photoURL: string | null) {
     console.log(user)
     if (user) {
       const dataRef = doc(this.db, "users", user.user.uid)
@@ -19,7 +20,7 @@ export class ChatService {
         await setDoc(dataRef, {
           email: email,
           displayName: displayName || '',
-          uid : user.user.uid,
+          uid: user.user.uid,
           profilePic: photoURL || ''
         })
         console.log("saved")
@@ -38,7 +39,7 @@ export class ChatService {
     const queryData = doc(this.db, "users", id)
     const querySnapShot = (await getDoc(queryData)).data()
     return querySnapShot;
-    
+
   }
 
   async sendMessage(senderId: string | undefined, receiverId: string | undefined, text: any) {
@@ -59,20 +60,28 @@ export class ChatService {
   }
 
   async getMessages(senderId: string | undefined, receiverId: string | undefined) {
-    if(this.unsubscribedMessages){
+    if (this.unsubscribedMessages) {
       this.unsubscribedMessages()
     }
-
-    if(!senderId && receiverId) return
-
+    if (!senderId && receiverId) return
     const chatId = [senderId, receiverId].sort().join("_")
     const msgRef = collection(this.db, `chats/${chatId}/messages`)
     const queryData = query(msgRef, orderBy("timeStamp"))
     this.unsubscribedMessages = onSnapshot(queryData, (snap) => {
-      const msgs = snap.docs.map(doc => ({ id: doc.id, ...doc.data()}))
-      this.messages.set( msgs ) 
+      const msgs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+      console.log(msgs[msgs.length - 1])
+      this.lastMessage.set(msgs[msgs.length - 1])
+      this.messages.set(msgs)
     })
-    // const querySnapShot = (await getDocs(queryData)).docs.map(doc => doc.data())
-    // return querySnapShot
   }
+
+  async getLastMessageBetweenUsers(user1: string | null, user2: string | null) {
+    const chatId = [user1, user2].sort().join("_");
+    const msgRef = collection(this.db, `chats/${chatId}/messages`);
+    const q = query(msgRef, orderBy("timeStamp", "desc"));
+    const snapshot = await getDocs(q);
+    const last = snapshot.docs[0]?.data();
+    return last || null;
+  }
+
 }

@@ -23,7 +23,9 @@
                         <img class="chat-profile-img" [src]="user.profilePic" alt="chat user profile image">
                         <div class="d-flex flex-column">
                             <h5 class="mb-0 chat-el-title">{{ user.displayName }}</h5>
-                            <span class="chat-el-desc-text">Hi Jonathan, how are...</span>
+                            <div *ngIf="lastMessage() as msg">
+                                <span class="chat-el-desc-text">{{msg.text}}...</span>
+                            </div>
                         </div>
                     </div>
     

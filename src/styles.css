@@ -1,51 +1,106 @@
 /*  */
-:root{
-    --bright-blue: oklch(51.01% 0.274 263.83);
-    --electric-violet: oklch(53.18% 0.28 296.97);
-    --french-violet: oklch(47.66% 0.246 305.88);
-    --vivid-pink: oklch(69.02% 0.277 332.77);
-    --hot-red: oklch(61.42% 0.238 15.34);
-    --orange-red: oklch(63.32% 0.24 31.68);
+:root {
+  --bright-blue: oklch(51.01% 0.274 263.83);
+  --electric-violet: oklch(53.18% 0.28 296.97);
+  --french-violet: oklch(47.66% 0.246 305.88);
+  --vivid-pink: oklch(69.02% 0.277 332.77);
+  --hot-red: oklch(61.42% 0.238 15.34);
+  --orange-red: oklch(63.32% 0.24 31.68);
 
-    --gray-900: oklch(19.37% 0.006 300.98);
-    --gray-700: oklch(36.98% 0.014 302.71);
-    --gray-400: oklch(70.9% 0.015 304.04);
+  --gray-900: oklch(19.37% 0.006 300.98);
+  --gray-700: oklch(36.98% 0.014 302.71);
+  --gray-400: oklch(70.9% 0.015 304.04);
 
-    --red-to-pink-to-purple-vertical-gradient: linear-gradient(
-      180deg,
+  --red-to-pink-to-purple-vertical-gradient: linear-gradient(180deg,
       var(--orange-red) 0%,
       var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
+      var(--electric-violet) 100%);
 
-    --red-to-pink-to-purple-horizontal-gradient: linear-gradient(
-      90deg,
+  --red-to-pink-to-purple-horizontal-gradient: linear-gradient(90deg,
       var(--orange-red) 0%,
       var(--vivid-pink) 50%,
-      var(--electric-violet) 100%
-    );
+      var(--electric-violet) 100%);
 }
 
-.rotate-45{
+.rotate-45 {
   transform: rotate(45deg);
 }
 
-button{
-  border : none;
+button {
+  border: none;
   outline: none;
   background-color: transparent;
   transition: transform .3s ease;
 }
 
-button:active{
+button:active {
   transform: scale(0.8);
 }
 
-svg{
+svg {
   width: 20px;
   height: 20px;
 }
 
-.full-h-vh{
-  height : 100vh;
+.full-h-vh {
+  height: 100vh;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  --mat-sys-body-medium: 400 0.875rem / 1.25rem "Poppins", sans-serif;
+  --mat-sys-body-medium-font: "Poppins", sans-serif;
+}
+
+/* Snackbar styles */
+
+.mat-mdc-snack-bar-container .mat-mdc-button.mat-mdc-snack-bar-action:not(:disabled) {
+  --mat-text-button-state-layer-color: transparent;
+  --mat-text-button-ripple-color: transparent;
+  font-family: "Poppins", sans-serif;
+}
+
+.snackbar-success,
+.snackbar-error {
+  --mat-snack-bar-button-color: white;
+
+
+}
+
+.snackbar-success .mat-mdc-snack-bar-action {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.snackbar-error .mat-mdc-snack-bar-action {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.snackbar-success {
+  --mdc-snackbar-container-color: rgba(7, 202, 7, 0.271);
+  color: white
+}
+
+.mat-mdc-snack-bar-label {
+  color: white;
+}
+
+.mat-mdc-snack-bar-action {
+  --mat-text-button-state-layer-color: hsla(0, 0%, 100%, 0.2);
+  --mat-sys-body-medium-font: "Poppins", sans-serif;
+
+}
+
+.mat-mdc-snack-bar-action:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: black;
+}
+
+.snackbar-error {
+  --mdc-snackbar-container-color: rgba(202, 40, 7, 0.271);
 }

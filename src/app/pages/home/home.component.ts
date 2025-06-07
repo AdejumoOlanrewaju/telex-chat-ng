@@ -30,6 +30,8 @@ export class HomeComponent implements OnInit {
   signedInUsers!: any;
   userVar !: any;
   selectedUser = signal<any>(null);
+  lastMessage!: any;
+
   constructor() {
     onAuthStateChanged(this.auth, (user: any) => {
       if (!user) this.router.navigate(['login'])
@@ -45,6 +47,7 @@ export class HomeComponent implements OnInit {
     })
     // effect(() => {
     //   console.log('Messages updated:', this.chatService.messages());
+    //   console.log("Last Message : ", this.chatService.lastMessage())
     // });
 
   }
@@ -60,6 +63,10 @@ export class HomeComponent implements OnInit {
 
   async signedInUsersFunc() {
     this.signedInUsers = await this.chatService.getSignedInUsers(this.currentUserId())
+    for (const user of this.signedInUsers) {
+      const lastMsg = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
+      user.lastMessage = lastMsg['text'] || '';
+    }
     return this.signedInUsers
   }
 
@@ -81,8 +88,10 @@ export class HomeComponent implements OnInit {
     try {
       let messageVal = this.messageControl.value?.trim()
       console.log(this.receiverId())
-      
-      this.chatService.sendMessage(this.senderId(), this.receiverId(), messageVal)
+
+      if (messageVal !== "") {
+        this.chatService.sendMessage(this.senderId(), this.receiverId(), messageVal)
+      }
       this.messageControl.setValue('')
       this.getMessages()
     } catch (error) {
@@ -108,6 +117,7 @@ export class HomeComponent implements OnInit {
     this.chatService.getMessages(sender, receiver).then(data => {
     })
     console.log(this.chatService.messages())
+    this.lastMessage = this.chatService.lastMessage;
   }
 
 
