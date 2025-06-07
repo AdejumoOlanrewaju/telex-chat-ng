@@ -6,7 +6,7 @@ import { Auth, User } from '@angular/fire/auth';
 })
 export class ChatService {
   messages = signal<any[]>([])
-  lastMessage = signal<any>(null)
+  // lastMessage = signal<any>(null)
   private unsubscribedMessages: (() => void) | null = null
   constructor(private db: Firestore, private auth: Auth) { }
 
@@ -29,7 +29,6 @@ export class ChatService {
   }
 
   async getSignedInUsers(currentUserId: any) {
-    console.log(currentUserId)
     const queryData = query(collection(this.db, "users"), where('uid', '!=', currentUserId))
     const querySnapShot = (await getDocs(queryData)).docs.map(doc => doc.data())
     return querySnapShot;
@@ -69,8 +68,6 @@ export class ChatService {
     const queryData = query(msgRef, orderBy("timeStamp"))
     this.unsubscribedMessages = onSnapshot(queryData, (snap) => {
       const msgs = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-      console.log(msgs[msgs.length - 1])
-      this.lastMessage.set(msgs[msgs.length - 1])
       this.messages.set(msgs)
     })
   }
@@ -78,9 +75,12 @@ export class ChatService {
   async getLastMessageBetweenUsers(user1: string | null, user2: string | null) {
     const chatId = [user1, user2].sort().join("_");
     const msgRef = collection(this.db, `chats/${chatId}/messages`);
-    const q = query(msgRef, orderBy("timeStamp", "desc"));
+    const q = query(msgRef, orderBy("timeStamp"));
     const snapshot = await getDocs(q);
-    const last = snapshot.docs[0]?.data();
+    const last = snapshot.docs[snapshot.docs.length - 1]?.data();
+    // snapshot.docs.forEach(data => console.log(data.data()))
+    // this.lastMessage.set(last)
+    // console.log(snapshot.docs)
     return last || null;
   }
 

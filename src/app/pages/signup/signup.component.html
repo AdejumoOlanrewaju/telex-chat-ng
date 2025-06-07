@@ -5,17 +5,17 @@
             <h2 class="form-title mb-4 text-center">Signup</h2>
             <form (ngSubmit)="signup()">
                 <div class="mb-3">
-                    <label for="inputName" class="form-label">Name</label>
+                    <label for="inputName" class="form-label">Name <span class = "rq-span">*</span></label>
                     <input [formControl]="nameControl" type="text" class="form-control" id="inputName">
                 </div>
                 <div class="mb-3">
-                    <label for="exampleInputEmail1" class="form-label">Email address</label>
+                    <label for="exampleInputEmail1" class="form-label">Email address <span class = "rq-span">*</span></label>
                     <input [formControl]="emailControl" type="email" class="form-control" id="exampleInputEmail1"
                         aria-describedby="emailHelp">
                     <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
                 </div>
                 <div class="mb-3">
-                    <label for="InputPassword1" class="form-label">Password</label>
+                    <label for="InputPassword1" class="form-label">Password<span class = "rq-span">*</span></label>
                     <div class="ps-input-container">
                         <input #passwordInput [formControl]="passwordControl" type="password" class="ps-input"
                             id="InputPassword1">
@@ -32,7 +32,17 @@
                     <label for="inputProfile" class="form-label">Profile Pic(URL)</label>
                     <input [formControl]="profilePicControl" type="text" class="form-control" id="inputProfile">
                 </div>
-                <button type="submit" class="btn btn-primary block w-100 mt-3">Submit</button>
+                <button type="submit" class="btn btn-primary block w-100 mt-3">
+                    @if(loading == true){
+                    <span class="">
+                        <i style="width : fit-content; margin: 0 auto; font-size: 20px;"
+                            class="bi bi-arrow-clockwise loading d-block">
+                        </i>
+                    </span>
+                    }@else {
+                    <span>Submit</span>
+                    }
+                </button>
             </form>
             <p class="lg-cta mt-4 text-end">
                 Already have an account? <a routerLink="/login">Login</a>

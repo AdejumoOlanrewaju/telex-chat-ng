@@ -25,7 +25,17 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary block w-100 mt-3">Submit</button>
+                <button type="submit" class="btn btn-primary block w-100 mt-3">
+                    @if(loading == true){
+                    <span class="">
+                        <i style="width : fit-content; margin: 0 auto; font-size: 20px;"
+                            class="bi bi-arrow-clockwise loading d-block">
+                        </i>
+                    </span>
+                    }@else {
+                    <span>Submit</span>
+                    }
+                </button>
             </form>
             <p class="lg-cta mt-4 text-end">
                 Don't have an account? <a routerLink="/signup">Signup</a>

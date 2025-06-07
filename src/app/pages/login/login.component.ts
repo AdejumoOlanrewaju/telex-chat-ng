@@ -14,6 +14,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class LoginComponent {
   constructor() { }
   showPs: boolean = false
+  loading: boolean = false
   @ViewChild('passwordInput') passwordInput !: ElementRef;
 
   private auth = inject(Auth)
@@ -25,8 +26,23 @@ export class LoginComponent {
   protected passwordControl = new FormControl('', [Validators.required, Validators.minLength(6)])
 
   login() {
-    if(this.formValid()){
-      this.authService.login(this.emailControl, this.passwordControl)
+    try {
+      this.loading = true
+      if (this.formValid()) {
+        this.authService.login(this.emailControl.value, this.passwordControl.value).then(() => {
+          this.snackBar.open("Form submitted successfully", "Dismiss", {
+            duration: 9000,
+            panelClass: ['snackbar-success']
+          })
+        });
+      }
+    } catch (error: any) {
+      console.log(error)
+      this.snackBar.open(error, "ok", {
+        panelClass: ['snackbar-error']
+      })
+    } finally {
+      this.loading = false
     }
   }
 
@@ -37,12 +53,12 @@ export class LoginComponent {
         duration: 9000,
         panelClass: ['snackbar-success']
       })
-    } else {
-      this.snackBar.open("Error occurred, pls fill all fields correctly", "ok", {
+    }else{
+      this.snackBar.open("Pls fill all the fields", "ok", {
         panelClass: ['snackbar-error']
       })
     }
-    return this.emailControl.valid && this.passwordControl.valid;
+    return isValid
   }
 
   handleEyeClick() {

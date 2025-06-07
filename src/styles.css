@@ -26,6 +26,28 @@
   transform: rotate(45deg);
 }
 
+.loading {
+  animation: load .5s linear infinite forwards;
+}
+
+@keyframes load {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rq-span {
+  color: rgb(241, 139, 139);
+  font-size: 24px;
+  transform: translate(3px, -7px);
+  display: inline;
+  position: absolute;
+}
+
 button {
   border: none;
   outline: none;

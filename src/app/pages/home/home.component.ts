@@ -19,6 +19,7 @@ export class HomeComponent implements OnInit {
   public chatService = inject(ChatService)
 
   protected messageControl = new FormControl('')
+  public searchInput = new FormControl('')
   public dataRef = collection(this.db, "messages")
 
   messages = signal<any[]>([]);
@@ -30,7 +31,9 @@ export class HomeComponent implements OnInit {
   signedInUsers!: any;
   userVar !: any;
   selectedUser = signal<any>(null);
-  lastMessage!: any;
+  allUsers : any[] = [];
+  
+  
 
   constructor() {
     onAuthStateChanged(this.auth, (user: any) => {
@@ -52,29 +55,33 @@ export class HomeComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {
-
-
-  }
+  ngOnInit(): void {}
 
   async getCurrentUserInfo() {
     this.userVar = await this.chatService.getCurrentUserInfo(this.currentUserId())
   }
 
   async signedInUsersFunc() {
-    this.signedInUsers = await this.chatService.getSignedInUsers(this.currentUserId())
-    for (const user of this.signedInUsers) {
-      const lastMsg = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
-      user.lastMessage = lastMsg['text'] || '';
-    }
-    return this.signedInUsers
+    let users = await this.chatService.getSignedInUsers(this.currentUserId())
+
+    const userPromises = users.map(async (user: any) => {
+      try{
+        const lastMsg:any = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
+        return { ...user, lastMessage : lastMsg?.text || ''}
+      }catch(err){
+        console.log(`Error fetching message for ${user.uid}: `, err)
+        return {...user, lastMessage : ''}
+      }
+    })
+    users = await Promise.all(userPromises)
+    this.allUsers = users;
+    this.signedInUsers = users
+    return this.signedInUsers;
   }
 
   selectUser(user: any) {
     this.selectedUser.set(user);
     this.receiverId.set(user.uid)
-    console.log("selected receiver id: ", this.receiverId());
-
     setTimeout(() => {
       const sender = this.senderId()
       const receiver = this.receiverId()
@@ -87,8 +94,6 @@ export class HomeComponent implements OnInit {
   async sendMessage() {
     try {
       let messageVal = this.messageControl.value?.trim()
-      console.log(this.receiverId())
-
       if (messageVal !== "") {
         this.chatService.sendMessage(this.senderId(), this.receiverId(), messageVal)
       }
@@ -116,16 +121,25 @@ export class HomeComponent implements OnInit {
     }
     this.chatService.getMessages(sender, receiver).then(data => {
     })
-    console.log(this.chatService.messages())
-    this.lastMessage = this.chatService.lastMessage;
+    // console.log(this.chatService.messages())
   }
-
 
   isCurrentUser(userId: any) {
     return this.currentUserId() == userId
 
   }
 
+  searchUserFunc(){
+    const searchVal = this.searchInput.value?.toLowerCase()
+    if(searchVal?.trim() == ""){
+      this.signedInUsers = this.allUsers
+    }else{
+      this.signedInUsers = this.allUsers.filter((user: any) => {
+        return user.displayName.toLowerCase().includes(searchVal)
+      })
+
+    }
+  }
 
 }
 

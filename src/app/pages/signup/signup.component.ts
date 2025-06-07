@@ -15,6 +15,7 @@ import { MatSnackBar } from "@angular/material/snack-bar"
 export class SignupComponent {
   constructor() { }
   showPs: boolean = false
+  loading: boolean = false
   @ViewChild('passwordInput') passwordInput !: ElementRef;
 
   private auth = inject(Auth)
@@ -30,22 +31,37 @@ export class SignupComponent {
   protected profilePicControl = new FormControl('')
 
   async signup() {
-    if(this.formValid()){
-      this.authService.signup(this.emailControl, this.passwordControl, this.nameControl,
-        this.profilePicControl)
+    try {
+      this.loading = true
+      if (this.formValid()) {
+        this.authService.signup(this.emailControl, this.passwordControl, this.nameControl,
+          this.profilePicControl).then(() => {
+            this.snackBar.open("Form submitted successfully", "Dismiss", {
+              duration: 9000,
+              panelClass: ['snackbar-success']
+            })
+          });
+      }
+    } catch (error: any) {
+      console.log(error)
+      this.snackBar.open(error, "ok", {
+        panelClass: ['snackbar-error']
+      })
+    } finally {
+      this.loading = false
     }
   }
 
   formValid() {
     const isValid = this.nameControl.valid && this.emailControl.valid && this.passwordControl.valid
-    if(isValid){
+    if (isValid) {
       this.snackBar.open("Form completed successfully", "Dismiss", {
-        duration : 9000,
-        panelClass : ['snackbar-success']
+        duration: 9000,
+        panelClass: ['snackbar-success']
       })
-    }else{
-      this.snackBar.open("Error occurred, pls fill all fields correctly", "ok", {
-        panelClass : ['snackbar-error']
+    } else {
+      this.snackBar.open("Pls fill all the required fields correctly", "ok", {
+        panelClass: ['snackbar-error']
       })
     }
     return this.nameControl.valid && this.emailControl.valid && this.passwordControl.valid;

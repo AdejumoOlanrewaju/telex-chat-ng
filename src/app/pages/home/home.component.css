@@ -133,7 +133,8 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap : 10px;
+    gap: 10px;
+    overflow-y: auto;
 }
 
 .message-item {
@@ -145,12 +146,12 @@
 
 .message-item.sent {
     margin-left: auto;
-    text-align: right;
+    text-align: left;
     background-color: #4af4053b;
     border-top-right-radius: 0px;
 }
 
-.message-item.sent .email-txt{
+.message-item.sent .email-txt {
     text-align: left;
 }
 
@@ -159,10 +160,6 @@
     text-align: left;
     background-color: #00a4e133;
     border-top-left-radius: 0px;
-}
-
-.message-item.received .email-txt{
-    text-align: right;
 }
 
 .email-txt,
@@ -236,6 +233,15 @@
     margin: 0 auto;
 }
 
+.profile-pic-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    display: block;
+    margin: 0 auto;
+    border-radius: 50%;
+}
+
 .logout-btn {
     background-color: rgb(158, 1, 1);
     color: white;
@@ -244,4 +250,3 @@
     padding: 3px;
 
 }
-

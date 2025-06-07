@@ -2,45 +2,44 @@
     <div class="side-menu">
         <div class="head-ct">
             <div class="d-flex justify-content-between align-items-center ">
-                <h4 class="mt-0">Chat</h4>
+                <h4 class="mt-0">TelexChat</h4>
 
-                <div class="d-flex gap-2 align-items-center">
+                <!-- <div class="d-flex gap-2 align-items-center">
                     <i class="bi bi-filter filter-icon"></i>
                     <span class="filter-text">Filter</span>
-                </div>
+                </div> -->
             </div>
 
             <div class="search-bar mt-2">
                 <i class="bi bi-search"></i>
-                <input type="text" name="search" id="" placeholder="Search">
+                <input (input)="searchUserFunc()" [formControl] = "searchInput" type="text" name="search" id="" placeholder="Search">
             </div>
         </div>
 
         <div class="chat-el-container">
             @for(user of signedInUsers; track $index){
-                <div class="chat-el" (click) = "selectUser(user)">
-                    <div class="d-flex align-items-center gap-2">
-                        <img class="chat-profile-img" [src]="user.profilePic" alt="chat user profile image">
-                        <div class="d-flex flex-column">
-                            <h5 class="mb-0 chat-el-title">{{ user.displayName }}</h5>
-                            <div *ngIf="lastMessage() as msg">
-                                <span class="chat-el-desc-text">{{msg.text}}...</span>
-                            </div>
-                        </div>
-                    </div>
-    
+            <div class="chat-el" (click)="selectUser(user)">
+                <div class="d-flex align-items-center gap-2">
+                    <img class="chat-profile-img" [src]="user.profilePic" alt="chat user profile image">
                     <div class="d-flex flex-column">
-                        <span class="time-text">5 min</span>
-                        <span class="un-msg-text">4</span>
+                        <h5 class="mb-0 chat-el-title">{{ user.displayName }}</h5>
+                        <span class="chat-el-desc-text">{{ user.lastMessage?.slice(0, 20) }}...</span>
+
                     </div>
                 </div>
+
+                <div class="d-flex flex-column">
+                    <span class="time-text">5 min</span>
+                    <!-- <span class="un-msg-text">4</span> -->
+                </div>
+            </div>
             }
         </div>
     </div>
     <div class="chat-main-container">
         <div class="head-ct d-flex justify-content-between align-items-center">
             <div class="d-flex flex-column gap-1">
-                <h5 class="fr-name">{{ userVar.displayName }}</h5>
+                <h5 class="fr-name">{{ userVar?.displayName }}</h5>
                 <span class="duration-sn">Last seen 5 hours ago</span>
             </div>
 
@@ -52,11 +51,15 @@
                         <i class="bi bi-person-fill"></i>
                     </span>
                     @if(hasProfile){
-                        <div class="profile-box">
+                    <div class="profile-box">
+                        @if(userVar.profilePic){
+                            <img class="profile-pic-img" [src]="userVar.profilePic" alt="">
+                        }@else {
                             <span class="img-pl"></span>
-                            <p class="email-txt text-center mt-2">{{ user?.email }}</p>
-                            <button class="logout-btn" (click)="logoutFunc()">Logout</button>
-                        </div>
+                        }
+                        <p class="email-txt text-center mt-2">{{ user?.email }}</p>
+                        <button class="logout-btn" (click)="logoutFunc()">Logout</button>
+                    </div>
                     }
                 </div>
             </div>
@@ -64,21 +67,22 @@
 
         <div class="chat-box">
             <div *ngFor="let m of this.chatService.messages();">
-                <div  [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
+                <div [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
                     <span class="email-txt">{{m.email}}</span>
                     <span class="message-txt">{{m.text}}</span>
                     <!-- <span>{{m.status}}</span> -->
                 </div>
             </div>
-            
+
         </div>
 
         <div class="message-box">
             <button class="doc-btn">
                 <i class="bi bi-paperclip rotate-45"></i>
             </button>
-            <input class="mx-2" type="text" name="" id="" [formControl] = "messageControl" (keyup.enter) = "sendMessage()" placeholder="Type your message here">
-            <button class="send-btn" (click) = "sendMessage()">
+            <input class="mx-2" type="text" name="" id="" [formControl]="messageControl" (keyup.enter)="sendMessage()"
+                placeholder="Type your message here">
+            <button class="send-btn" (click)="sendMessage()">
                 <svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="send-alt"
                     class="icon glyph">
                     <path
@@ -90,3 +94,4 @@
         </div>
     </div>
 </div>
+

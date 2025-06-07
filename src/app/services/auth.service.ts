@@ -1,18 +1,21 @@
-import { Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { inject, Injectable } from '@angular/core';
+import { Auth, createUserWithEmailAndPassword, ErrorFn, signInWithEmailAndPassword } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { ChatService } from './chat.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
+  private snackBar = inject(MatSnackBar)
 
-  constructor(private router: Router, private auth: Auth, private chatService : ChatService) { }
+  constructor(private router: Router, private auth: Auth, private chatService: ChatService) { }
 
   async signup(emailControl: any, passwordControl: any, nameControl: any,
-profilePicControl : any) {
+    profilePicControl: any) {
     try {
       const email = emailControl.value;
       const password = passwordControl.value
@@ -27,21 +30,24 @@ profilePicControl : any) {
         )
       })
       this.router.navigate(['/login'])
-    } catch (err) {
+    } catch (err: ErrorFn | any) {
+      this.snackBar.open(err, "ok", {
+        panelClass: ['snackbar-error']
+      })
       throw (err)
     }
-
   }
 
-  async login(emailControl: any, passwordControl: any) {
+  async login(email: any, password: any) {
     try {
-      const email = emailControl.value!;
-      const password = passwordControl.value!
-
       await signInWithEmailAndPassword(this.auth, email, password)
       this.router.navigate(['/chat'])
-    } catch (err) {
+    } catch (err: ErrorFn | any) {
+      this.snackBar.open(err, "ok", {
+        panelClass: ['snackbar-error']
+      })
       throw (err)
+
     }
 
   }
