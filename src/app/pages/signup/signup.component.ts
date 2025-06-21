@@ -34,17 +34,17 @@ export class SignupComponent {
     try {
       this.loading = true
       if (this.formValid()) {
-        this.authService.signup(this.emailControl, this.passwordControl, this.nameControl,
-          this.profilePicControl).then(() => {
-            this.snackBar.open("Form submitted successfully", "Dismiss", {
-              duration: 9000,
-              panelClass: ['snackbar-success']
-            })
-          });
+        await this.authService.signup(this.emailControl, this.passwordControl, this.nameControl, this.profilePicControl)
+        
+        this.snackBar.open("Form submitted successfully", "Dismiss", {
+          duration: 9000,
+          panelClass: ['snackbar-success']
+        })
       }
     } catch (error: any) {
       console.log(error)
-      this.snackBar.open(error, "ok", {
+      const errorMessage = this.getFirebaseErrorMessage(error?.message)
+      this.snackBar.open(errorMessage, "ok", {
         panelClass: ['snackbar-error']
       })
     } finally {
@@ -52,19 +52,22 @@ export class SignupComponent {
     }
   }
 
+  getFirebaseErrorMessage(errorCode: string): string {
+    const errorMap: { [key: string]: string } = {
+      'Firebase: Error (auth/user-not-found).': 'No user found with this email.',
+      'Firebase: Error (auth/invalid-credential).': 'Incorrect Email or Passowrd. Please try again.',
+      'Firebase: Error (auth/invalid-email).': 'Invalid email format.',
+      'Firebase: Error (auth/user-disabled).': 'This account has been disabled.',
+      'Firebase: Error (auth/too-many-requests).': 'Too many login attempts. Please try again later.',
+      'Firebase: Error (auth/network-request-failed).': 'Network error. Check your internet connection.',
+    };
+
+    return errorMap[errorCode] || 'An unexpected error occurred. Please try again.';
+  }
+
   formValid() {
     const isValid = this.nameControl.valid && this.emailControl.valid && this.passwordControl.valid
-    if (isValid) {
-      this.snackBar.open("Form completed successfully", "Dismiss", {
-        duration: 9000,
-        panelClass: ['snackbar-success']
-      })
-    } else {
-      this.snackBar.open("Pls fill all the required fields correctly", "ok", {
-        panelClass: ['snackbar-error']
-      })
-    }
-    return this.nameControl.valid && this.emailControl.valid && this.passwordControl.valid;
+    return isValid;
   }
 
   handleEyeClick() {

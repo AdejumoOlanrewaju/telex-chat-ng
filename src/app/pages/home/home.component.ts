@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, ElementRef, inject, OnInit, signal, ViewChild, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from "@angular/forms"
 import { Auth, authState, signOut } from '@angular/fire/auth';
@@ -6,21 +6,28 @@ import { addDoc, collection, collectionData, Firestore, onSnapshot, orderBy, que
 import { Router } from '@angular/router';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { ChatService } from '../../services/chat.service';
+import { RealtimeService } from '../../services/realtime.service';
+import { HoursAgoPipe } from "../../Pipe/hours-ago.pipe";
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, HoursAgoPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('sideMenu') sideMenu !: ElementRef;
+  @ViewChild('chatMainContainer') ctMainContainer !: ElementRef;
+
   private auth = inject(Auth)
   private db = inject(Firestore)
   private router = inject(Router)
   public chatService = inject(ChatService)
+  public realtimeService = inject(RealtimeService)
 
   protected messageControl = new FormControl('')
   public searchInput = new FormControl('')
   public dataRef = collection(this.db, "messages")
+  public messageUnsbscribe: (() => void)[] = []
 
   messages = signal<any[]>([]);
   user: User | null = null;
@@ -31,9 +38,10 @@ export class HomeComponent implements OnInit {
   signedInUsers!: any;
   userVar !: any;
   selectedUser = signal<any>(null);
-  allUsers : any[] = [];
-  
-  
+  allUsers: any[] = [];
+  userStatus: any = null
+
+
 
   constructor() {
     onAuthStateChanged(this.auth, (user: any) => {
@@ -42,10 +50,24 @@ export class HomeComponent implements OnInit {
       this.currentUserId.set(user?.uid ?? null);
       this.senderId.set(user?.uid ?? null)
       this.getCurrentUserInfo()
-      this.signedInUsersFunc().then((data) => {
-        this.receiverId.set(data[0].uid)
-        this.getMessages()
-      })
+      if(user){
+        this.signedInUsersFunc().then((data) => {
+          this.receiverId.set(data[0].uid)
+          this.selectedUser.set(data[0])
+          this.getMessages()
+          data.forEach((user: any) => {
+            this.realtimeService.trackUser(user.uid)
+          })
+          setTimeout(() => {
+            data.forEach((user: { uid: string; }) => {
+              const status = this.realtimeService.getUserStatus(user.uid);
+              console.log(`Status for ${user.uid}:`, status);
+            });
+          }, 1000);
+        })
+      }else{
+
+      }
 
     })
     // effect(() => {
@@ -55,7 +77,12 @@ export class HomeComponent implements OnInit {
 
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void { }
+
+  getUserStatus(userId: string) {
+
+    return this.realtimeService.getUserStatus(userId)
+  }
 
   async getCurrentUserInfo() {
     this.userVar = await this.chatService.getCurrentUserInfo(this.currentUserId())
@@ -65,12 +92,13 @@ export class HomeComponent implements OnInit {
     let users = await this.chatService.getSignedInUsers(this.currentUserId())
 
     const userPromises = users.map(async (user: any) => {
-      try{
-        const lastMsg:any = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
-        return { ...user, lastMessage : lastMsg?.text || ''}
-      }catch(err){
+      try {
+        const lastMsg = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
+        console.log(lastMsg)
+        return { ...user, lastMessage: lastMsg || '' }
+      } catch (err) {
         console.log(`Error fetching message for ${user.uid}: `, err)
-        return {...user, lastMessage : ''}
+        return { ...user, lastMessage: '' }
       }
     })
     users = await Promise.all(userPromises)
@@ -81,6 +109,7 @@ export class HomeComponent implements OnInit {
 
   selectUser(user: any) {
     this.selectedUser.set(user);
+    console.log()
     this.receiverId.set(user.uid)
     setTimeout(() => {
       const sender = this.senderId()
@@ -89,6 +118,18 @@ export class HomeComponent implements OnInit {
         this.getMessages()
       }
     }, 0)
+
+    this.sideMenu.nativeElement.classList.add("slideOut")
+    this.sideMenu.nativeElement.classList.remove("slideIn")
+    this.ctMainContainer.nativeElement.classList.add("slideIn")
+    this.ctMainContainer.nativeElement.classList.remove("slideOut")
+  }
+
+  showMainPanel() {
+    this.sideMenu.nativeElement.classList.remove("slideOut")
+    this.sideMenu.nativeElement.classList.add("slideIn")
+    this.ctMainContainer.nativeElement.classList.add("slideOut")
+    this.ctMainContainer.nativeElement.classList.remove("slideIn")
   }
 
   async sendMessage() {
@@ -119,8 +160,7 @@ export class HomeComponent implements OnInit {
     if (sender && receiver) {
       await this.chatService.getMessages(this.senderId(), this.receiverId())
     }
-    this.chatService.getMessages(sender, receiver).then(data => {
-    })
+    this.chatService.getMessages(sender, receiver)
     // console.log(this.chatService.messages())
   }
 
@@ -129,11 +169,11 @@ export class HomeComponent implements OnInit {
 
   }
 
-  searchUserFunc(){
+  searchUserFunc() {
     const searchVal = this.searchInput.value?.toLowerCase()
-    if(searchVal?.trim() == ""){
+    if (searchVal?.trim() == "") {
       this.signedInUsers = this.allUsers
-    }else{
+    } else {
       this.signedInUsers = this.allUsers.filter((user: any) => {
         return user.displayName.toLowerCase().includes(searchVal)
       })
@@ -141,5 +181,12 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  cleanupMessageListeners(){
+    
+  }
+
+  ngOnDestroy(){
+
+  }
 }
 

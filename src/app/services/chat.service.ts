@@ -1,12 +1,12 @@
 import { Injectable, signal } from '@angular/core';
-import { Firestore, collection, addDoc, serverTimestamp, getDocs, orderBy, where, query, doc, getDoc, setDoc, onSnapshot } from '@angular/fire/firestore';
+import { Firestore, collection, addDoc, serverTimestamp, getDocs, orderBy, where, query, doc, getDoc, setDoc, onSnapshot, limit } from '@angular/fire/firestore';
 import { Auth, User } from '@angular/fire/auth';
 @Injectable({
   providedIn: 'root'
 })
 export class ChatService {
   messages = signal<any[]>([])
-  // lastMessage = signal<any>(null)
+  lastMessage = signal<any>(null)
   private unsubscribedMessages: (() => void) | null = null
   constructor(private db: Firestore, private auth: Auth) { }
 
@@ -72,16 +72,43 @@ export class ChatService {
     })
   }
 
-  async getLastMessageBetweenUsers(user1: string | null, user2: string | null) {
-    const chatId = [user1, user2].sort().join("_");
-    const msgRef = collection(this.db, `chats/${chatId}/messages`);
-    const q = query(msgRef, orderBy("timeStamp"));
-    const snapshot = await getDocs(q);
-    const last = snapshot.docs[snapshot.docs.length - 1]?.data();
+  getLastMessageBetweenUsers(user1: string | null, user2: string | null, callback: (message: any) => void): () => void {
+    // return new Promise((resolve, reject) => {
+    //   const chatId = [user1, user2].sort().join("_");
+    //   const msgRef = collection(this.db, `chats/${chatId}/messages`);
+    //   const q = query(msgRef, orderBy("timeStamp", 'desc'), limit(1));
+    //   onSnapshot(q, (snapShot) => {
+    //     const data = snapShot.docs[0]?.data()
+    //     console.log(data)
+    // this.lastMessage.set(data)
+
+    //     resolve(data) 
+    //     this.lastMessage.set(data)
+    //   }, (error) => {
+    //     reject(error)
+    //   })
+
+    // })
+
+    // const snapshot = await getDocs(q);
+    // const last = snapshot.docs[snapshot.docs.length - 1]?.data();
     // snapshot.docs.forEach(data => console.log(data.data()))
     // this.lastMessage.set(last)
-    // console.log(snapshot.docs)
-    return last || null;
+
+    const chatId = [user1, user2].sort().join("_");
+    const msgRef = collection(this.db, `chats/${chatId}/messages`);
+    const q = query(msgRef, orderBy("timeStamp", 'desc'), limit(1));
+
+    const unsubscribe = onSnapshot(q, (snapShot) => {
+      const data = snapShot.docs[0]?.data() || null
+      callback(data)
+    }, (error) => {
+      console.log("Error in onSnapShot: ", error)
+      callback(null)
+    })
+
+    return unsubscribe
+
   }
 
 }
