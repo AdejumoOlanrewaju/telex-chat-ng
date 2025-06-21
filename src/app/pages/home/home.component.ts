@@ -27,7 +27,7 @@ export class HomeComponent implements OnInit {
   protected messageControl = new FormControl('')
   public searchInput = new FormControl('')
   public dataRef = collection(this.db, "messages")
-  public messageUnsbscribe: (() => void)[] = []
+  public messageUnsbscribers: (() => void)[] = []
 
   messages = signal<any[]>([]);
   user: User | null = null;
@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
       this.currentUserId.set(user?.uid ?? null);
       this.senderId.set(user?.uid ?? null)
       this.getCurrentUserInfo()
-      if(user){
+      if (user) {
         this.signedInUsersFunc().then((data) => {
           this.receiverId.set(data[0].uid)
           this.selectedUser.set(data[0])
@@ -65,7 +65,7 @@ export class HomeComponent implements OnInit {
             });
           }, 1000);
         })
-      }else{
+      } else {
 
       }
 
@@ -91,19 +91,31 @@ export class HomeComponent implements OnInit {
   async signedInUsersFunc() {
     let users = await this.chatService.getSignedInUsers(this.currentUserId())
 
-    const userPromises = users.map(async (user: any) => {
-      try {
-        const lastMsg = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
-        console.log(lastMsg)
-        return { ...user, lastMessage: lastMsg || '' }
-      } catch (err) {
-        console.log(`Error fetching message for ${user.uid}: `, err)
-        return { ...user, lastMessage: '' }
-      }
+    // const userPromises = users.map(async (user: any) => {
+    //   try {
+    //     const lastMsg = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
+    //     console.log(lastMsg)
+    //     return { ...user, lastMessage: lastMsg || '' }
+    //   } catch (err) {
+    //     console.log(`Error fetching message for ${user.uid}: `, err)
+    //     return { ...user, lastMessage: '' }
+    //   }
+    // })
+    // users = await Promise.all(userPromises)
+    users.forEach((user: any, index: number) => {
+      const unsubscribe = this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid, 
+      (lastMsg) => {
+        users[index]['lastMessage'] = lastMsg || '';
+        this.signedInUsers = [...users].sort((a: any, b: any) : any =>  {
+          const timeA = a['lastMessage']?.timeStamp?.seconds || 0
+          const timeB = b['lastMessage']?.timeStamp?.seconds || 0
+          return timeB - timeA
+        })
+      });
+      this.messageUnsbscribers.push(unsubscribe)
     })
-    users = await Promise.all(userPromises)
     this.allUsers = users;
-    this.signedInUsers = users
+    this.signedInUsers = [...users]
     return this.signedInUsers;
   }
 
@@ -181,12 +193,13 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  cleanupMessageListeners(){
-    
+  cleanupMessageListeners() {
+    this.messageUnsbscribers.forEach(unsub => unsub())
+    this.messageUnsbscribers = []
   }
 
-  ngOnDestroy(){
-
+  ngOnDestroy() {
+    this.cleanupMessageListeners()
   }
 }
 
