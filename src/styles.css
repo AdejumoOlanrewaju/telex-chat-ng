@@ -89,7 +89,8 @@ body {
 }
 
 .snackbar-success,
-.snackbar-error {
+.snackbar-error,
+.snackbar-info {
   --mat-snack-bar-button-color: white;
 
 
@@ -100,6 +101,10 @@ body {
 }
 
 .snackbar-error .mat-mdc-snack-bar-action {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.snackbar-info .mat-mdc-snack-bar-action {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
@@ -121,6 +126,10 @@ body {
 .mat-mdc-snack-bar-action:hover {
   background-color: rgba(255, 255, 255, 0.3);
   color: black;
+}
+
+.snackbar-info {
+  background-color: rgba(138, 164, 6, 0.2);
 }
 
 .snackbar-error {

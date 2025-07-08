@@ -2,12 +2,13 @@ import { Component, effect, ElementRef, inject, OnInit, signal, ViewChild, viewC
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from "@angular/forms"
 import { Auth, authState, signOut } from '@angular/fire/auth';
-import { addDoc, collection, collectionData, Firestore, onSnapshot, orderBy, query } from '@angular/fire/firestore';
+import { addDoc, collection, collectionData, doc, Firestore, getDocs, limit, onSnapshot, orderBy, query, serverTimestamp, setDoc, updateDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { ChatService } from '../../services/chat.service';
 import { RealtimeService } from '../../services/realtime.service';
 import { HoursAgoPipe } from "../../Pipe/hours-ago.pipe";
+import { toSignal } from "@angular/core/rxjs-interop"
 @Component({
   selector: 'app-home',
   imports: [ReactiveFormsModule, CommonModule, HoursAgoPipe],
@@ -34,16 +35,19 @@ export class HomeComponent implements OnInit {
   hasProfile: boolean = false;
   currentUserId = signal<string | null>('');
   senderId = signal<any>('');
-  receiverId = signal<string | undefined>('');
+  receiverId = signal<string>('');
   signedInUsers!: any;
   userVar !: any;
   selectedUser = signal<any>(null);
   allUsers: any[] = [];
   userStatus: any = null
-
-
+  chats = this.chatService.chats
+  watchingInterval: any = null;
+  userSignal = toSignal(authState(this.auth))
+  clickedChat = false
 
   constructor() {
+
     onAuthStateChanged(this.auth, (user: any) => {
       if (!user) this.router.navigate(['login'])
       this.user = user
@@ -52,8 +56,8 @@ export class HomeComponent implements OnInit {
       this.getCurrentUserInfo()
       if (user) {
         this.signedInUsersFunc().then((data) => {
-          this.receiverId.set(data[0].uid)
-          this.selectedUser.set(data[0])
+          // this.receiverId.set(data[0].uid)
+          // this.selectedUser.set(data[0])
           this.getMessages()
           data.forEach((user: any) => {
             this.realtimeService.trackUser(user.uid)
@@ -61,7 +65,7 @@ export class HomeComponent implements OnInit {
           setTimeout(() => {
             data.forEach((user: { uid: string; }) => {
               const status = this.realtimeService.getUserStatus(user.uid);
-              console.log(`Status for ${user.uid}:`, status);
+              // console.log(`Status for ${user.uid}:`, status);
             });
           }, 1000);
         })
@@ -70,14 +74,64 @@ export class HomeComponent implements OnInit {
       }
 
     })
-    // effect(() => {
-    //   console.log('Messages updated:', this.chatService.messages());
-    //   console.log("Last Message : ", this.chatService.lastMessage())
-    // });
-
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.chatService.loadChats()
+  }
+
+  getUnreadCountForUser(user: any) {
+    const chats = this.chats();
+    const currentUserId: any = this.currentUserId();
+
+    const possibleChat: any = chats.find((chat: any) =>
+      chat.users.includes(currentUserId) && chat.users.includes(user.uid)
+    );
+
+    if(!this.clickedChat){
+      if (!possibleChat) return false;
+  
+      const lastSeen = possibleChat.lastSeen?.[currentUserId];
+      const updatedAt = possibleChat.updatedAt;
+  
+      if (!updatedAt) return false;
+  
+  
+      if (updatedAt.toMillis && lastSeen.toMillis) {
+        if (updatedAt.toMillis() > lastSeen.toMillis()) {
+          return true;
+        }
+      }
+    }
+
+    this.clickedChat = false
+
+
+    return false;
+  }
+
+  async openChatWith(user: any) {
+    const chats: any[] = this.chats();
+    const currentUserId: any = this.currentUserId();
+
+    let chat = chats.find((chat: any) =>
+      chat.users.includes(currentUserId) && chat.users.includes(user.uid)
+    );
+
+    if (!chat) {
+      // Create new chat, do NOT mark as read yet (no message yet)
+      return;
+    } else {      
+      if (chat.lastMessage && chat.updatedAt) {
+        // Only mark as read if there are messages
+
+        await this.chatService.markAsRead(chat.id);
+        console.log(`Marked existing chat as read with ${user.displayName}`);
+      }
+    }
+
+
+  }
 
   getUserStatus(userId: string) {
 
@@ -90,46 +144,40 @@ export class HomeComponent implements OnInit {
 
   async signedInUsersFunc() {
     let users = await this.chatService.getSignedInUsers(this.currentUserId())
-
-    // const userPromises = users.map(async (user: any) => {
-    //   try {
-    //     const lastMsg = await this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid);
-    //     console.log(lastMsg)
-    //     return { ...user, lastMessage: lastMsg || '' }
-    //   } catch (err) {
-    //     console.log(`Error fetching message for ${user.uid}: `, err)
-    //     return { ...user, lastMessage: '' }
-    //   }
-    // })
-    // users = await Promise.all(userPromises)
     users.forEach((user: any, index: number) => {
-      const unsubscribe = this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid, 
-      (lastMsg) => {
-        users[index]['lastMessage'] = lastMsg || '';
-        this.signedInUsers = [...users].sort((a: any, b: any) : any =>  {
-          const timeA = a['lastMessage']?.timeStamp?.seconds || 0
-          const timeB = b['lastMessage']?.timeStamp?.seconds || 0
-          return timeB - timeA
-        })
-      });
+      const unsubscribe = this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid,
+        (lastMsg) => {
+          users[index]['lastMessage'] = lastMsg || '';
+          this.signedInUsers = [...users].sort((a: any, b: any): any => {
+            const timeA = a['lastMessage']?.timeStamp?.seconds || 0
+            const timeB = b['lastMessage']?.timeStamp?.seconds || 0
+            return timeB - timeA
+          })
+        });
+      // console.log(users[index])
       this.messageUnsbscribers.push(unsubscribe)
     })
+
     this.allUsers = users;
     this.signedInUsers = [...users]
     return this.signedInUsers;
   }
 
-  selectUser(user: any) {
+  async selectUser(user: any) {
+    this.clickedChat = true
     this.selectedUser.set(user);
-    console.log()
     this.receiverId.set(user.uid)
-    setTimeout(() => {
-      const sender = this.senderId()
-      const receiver = this.receiverId()
-      if (sender && receiver) {
-        this.getMessages()
-      }
-    }, 0)
+    const sender = this.senderId()
+    const receiver = this.receiverId()
+    
+    if (sender && receiver) {
+      this.getMessages()
+    }
+    const userRef = doc(this.db, `users/${this.senderId()}`);
+    await updateDoc(userRef, {
+      lastSeen: serverTimestamp()
+    });
+     this.openChatWith(user)
 
     this.sideMenu.nativeElement.classList.add("slideOut")
     this.sideMenu.nativeElement.classList.remove("slideIn")
@@ -146,7 +194,7 @@ export class HomeComponent implements OnInit {
 
   async sendMessage() {
     try {
-      let messageVal = this.messageControl.value?.trim()
+      let messageVal: any = this.messageControl.value?.trim()
       if (messageVal !== "") {
         this.chatService.sendMessage(this.senderId(), this.receiverId(), messageVal)
       }
@@ -191,6 +239,47 @@ export class HomeComponent implements OnInit {
       })
 
     }
+  }
+
+  formatMessageTime(timestamp: any): string {
+    const messageDate = timestamp?.toDate?.() ?? new Date(timestamp);
+    const now = new Date();
+
+    // Strip the time to only compare dates
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const messageDay = new Date(messageDate.getFullYear(), messageDate.getMonth(), messageDate.getDate());
+
+    const diffInDays = Math.floor((today.getTime() - messageDay.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) {
+      // Today: show time
+      return new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: 'numeric'
+      }).format(messageDate);
+    } else if (diffInDays === 1) {
+      // Yesterday
+      return "Yesterday";
+    } else {
+      // Older: show date as dd/MM/yy
+      const day = String(messageDate.getDate()).padStart(2, '0');
+      const month = String(messageDate.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+      const year = String(messageDate.getFullYear()).slice(-2);
+      return `${day}/${month}/${year}`; // e.g., "22/05/24"
+    }
+  }
+
+  async loadChats() {
+    const snapRef = collection(this.db, 'chats');
+    const queryData = query(snapRef, limit(1))
+    const snapShot = await getDocs(snapRef);
+
+    snapShot.docs.forEach(doc => {
+      console.log({
+        id: doc.id,
+        ...doc.data()
+      });
+    });
   }
 
   cleanupMessageListeners() {

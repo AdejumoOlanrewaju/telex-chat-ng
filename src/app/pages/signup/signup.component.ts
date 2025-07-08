@@ -33,13 +33,9 @@ export class SignupComponent {
   async signup() {
     try {
       this.loading = true
+      console.log(this.loading)
       if (this.formValid()) {
         await this.authService.signup(this.emailControl, this.passwordControl, this.nameControl, this.profilePicControl)
-        
-        this.snackBar.open("Form submitted successfully", "Dismiss", {
-          duration: 9000,
-          panelClass: ['snackbar-success']
-        })
       }
     } catch (error: any) {
       console.log(error)
@@ -49,13 +45,15 @@ export class SignupComponent {
       })
     } finally {
       this.loading = false
+      console.log(this.loading)
+
     }
   }
 
   getFirebaseErrorMessage(errorCode: string): string {
     const errorMap: { [key: string]: string } = {
       'Firebase: Error (auth/user-not-found).': 'No user found with this email.',
-      'Firebase: Error (auth/invalid-credential).': 'Incorrect Email or Passowrd. Please try again.',
+      'Firebase: Error (auth/invalid-credential).': 'Incorrect Email or Password. Please try again.',
       'Firebase: Error (auth/invalid-email).': 'Invalid email format.',
       'Firebase: Error (auth/user-disabled).': 'This account has been disabled.',
       'Firebase: Error (auth/too-many-requests).': 'Too many login attempts. Please try again later.',

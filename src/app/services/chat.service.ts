@@ -1,14 +1,31 @@
-import { Injectable, signal } from '@angular/core';
-import { Firestore, collection, addDoc, serverTimestamp, getDocs, orderBy, where, query, doc, getDoc, setDoc, onSnapshot, limit } from '@angular/fire/firestore';
+import { inject, Injectable, signal } from '@angular/core';
+import { Firestore, collection, addDoc, serverTimestamp, getDocs, orderBy, where, query, doc, getDoc, setDoc, onSnapshot, limit, updateDoc, collectionData, Timestamp } from '@angular/fire/firestore';
 import { Auth, User } from '@angular/fire/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 @Injectable({
   providedIn: 'root'
 })
+
+
 export class ChatService {
   messages = signal<any[]>([])
   lastMessage = signal<any>(null)
+  chats = signal<[]>([])
+  marked = signal<boolean>(false)
   private unsubscribedMessages: (() => void) | null = null
-  constructor(private db: Firestore, private auth: Auth) { }
+
+  auth = inject(Auth)
+  db = inject(Firestore)
+
+
+  currentUserId = signal<string | null | undefined>('')
+  constructor() {
+    onAuthStateChanged(this.auth, (user) => {
+      this.currentUserId.set(user?.uid)
+    })
+  }
+
+
 
   async storeUsersInfo(user: any, displayName: string | null, email: string | null, photoURL: string | null) {
     console.log(user)
@@ -41,11 +58,13 @@ export class ChatService {
 
   }
 
-  async sendMessage(senderId: string | undefined, receiverId: string | undefined, text: any) {
-    const chatId = [senderId, receiverId].sort().join("_")
-    const msgRef = collection(this.db, `chats/${chatId}/messages`)
-    const user = this.auth.currentUser
+  async sendMessage(senderId: string, receiverId: string, text: string) {
+    const chatId = [senderId, receiverId].sort().join('_');
+    const chatRef = doc(this.db, `chats/${chatId}`);
+    const msgRef = collection(this.db, `chats/${chatId}/messages`);
+    const user = this.auth.currentUser;
     if (!user) return;
+
     await addDoc(msgRef, {
       senderId,
       receiverId,
@@ -53,9 +72,18 @@ export class ChatService {
       email: user.email,
       status: 'sent',
       timeStamp: serverTimestamp()
-    })
+    });
 
+    await setDoc(chatRef, {
+      users: [senderId, receiverId],
+      lastMessage: text,
+      updatedAt: serverTimestamp(),
+      lastSeen: {
+        [senderId]: serverTimestamp()
+      }
+    }, { merge: true });
 
+    console.log('Message sent and chat updated');
   }
 
   async getMessages(senderId: string | undefined, receiverId: string | undefined) {
@@ -73,28 +101,6 @@ export class ChatService {
   }
 
   getLastMessageBetweenUsers(user1: string | null, user2: string | null, callback: (message: any) => void): () => void {
-    // return new Promise((resolve, reject) => {
-    //   const chatId = [user1, user2].sort().join("_");
-    //   const msgRef = collection(this.db, `chats/${chatId}/messages`);
-    //   const q = query(msgRef, orderBy("timeStamp", 'desc'), limit(1));
-    //   onSnapshot(q, (snapShot) => {
-    //     const data = snapShot.docs[0]?.data()
-    //     console.log(data)
-    // this.lastMessage.set(data)
-
-    //     resolve(data) 
-    //     this.lastMessage.set(data)
-    //   }, (error) => {
-    //     reject(error)
-    //   })
-
-    // })
-
-    // const snapshot = await getDocs(q);
-    // const last = snapshot.docs[snapshot.docs.length - 1]?.data();
-    // snapshot.docs.forEach(data => console.log(data.data()))
-    // this.lastMessage.set(last)
-
     const chatId = [user1, user2].sort().join("_");
     const msgRef = collection(this.db, `chats/${chatId}/messages`);
     const q = query(msgRef, orderBy("timeStamp", 'desc'), limit(1));
@@ -110,5 +116,37 @@ export class ChatService {
     return unsubscribe
 
   }
+
+
+  async loadChats() {
+    const collectionRef = collection(this.db, 'chats')
+    collectionData(collectionRef, { idField: 'id' }).subscribe((chats: any) => {
+      this.chats.set(chats)
+    })
+  }
+
+  async markAsRead(chatId: any) {
+    this.marked.set(false)
+    console.log(this.marked());
+    
+    try{
+      console.log('Mark as read clicked, chatId:', chatId);
+      const chatRef = doc(this.db, `chats/${chatId}`);
+      await updateDoc(chatRef, {
+        [`lastSeen.${this.currentUserId()}`]: serverTimestamp()
+      });
+  
+      console.log('lastSeen updated successfully');
+    }catch(err){
+      console.log(err);
+      
+    }finally{
+      this.marked.set(true)
+      console.log(this.marked());
+      
+    }
+  }
+
+
 
 }

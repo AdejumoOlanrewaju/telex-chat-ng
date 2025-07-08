@@ -39,7 +39,6 @@ export class RealtimeService {
 
     onValue(statusRef, (snapShot) => {
       const data = snapShot.val()
-      console.log(data)
       if (data) {
         this.usersStatus.update((prev) => ({
           ...prev,
@@ -49,7 +48,6 @@ export class RealtimeService {
           }
         }))
       }
-      console.log(this.usersStatus())
     })
   }
 

@@ -21,24 +21,33 @@
             @for(user of signedInUsers; track $index){
             <div class="chat-el" (click)="selectUser(user)">
                 <div class="d-flex align-items-center gap-2">
-                    @if(user?.profilePic){
-                    <img class="chat-profile-img" [src]="user?.profilePic" alt="chat user profile image">
-                    }@else {
-                    <span class="profile-icon-span">
-                        <i class="bi bi-person-fill"></i>
-                    </span>
-                    }
+                    <div class="profile-img-container">
+                        @if(user?.profilePic){
+                        <img class="chat-profile-img" [src]="user?.profilePic" alt="chat user profile image">
+                        }@else {
+                        <span class="profile-icon-span">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        }
+                        <div></div>
+                        <span *ngIf="getUserStatus(user?.uid)?.status == 'online'" class="status-indicator"></span>
+                    </div>
                     <div class="d-flex flex-column">
                         <h5 class="mb-0 chat-el-title">{{ user?.displayName }}</h5>
-                        <span class="chat-el-desc-text">{{ user?.lastMessage.text?.slice(0, 10) }}...</span>
+                        <span class="chat-el-desc-text">{{ user?.lastMessage?.text?.slice(0, 10) }}...</span>
 
                     </div>
                 </div>
-                <div *ngIf="getUserStatus(user?.uid) as status" class="d-flex flex-column">
-                    <span class="time-text">{{(user.lastMessage?.timeStamp?.toDate() | date : 'shortTime')}} </span>
-                    <!-- <span class="un-msg-text">4</span> -->
-                     <!-- ((status.lastChanged | date :
-                        'shortTime'))}} -->
+                <div class="d-flex flex-column">
+                    <span *ngIf="user.lastMessage?.timeStamp as lastMsg" class="time-text">{{ formatMessageTime(lastMsg)
+                        }} </span>
+                    <ng-container *ngIf="getUnreadCountForUser(user)">
+                        <span class="un-msg-text">new</span>
+                    </ng-container>
+                    <!-- ((status.lastChanged | date :
+                        'shortTime'))}}-->
+
+                    <!-- {{getUnreadCountForUser(user)}} -->
                 </div>
             </div>
             }
@@ -71,12 +80,13 @@
                 </div>
             </div>
 
-            <div class="d-flex gap-3">
-                <!-- <i class="bi bi-telephone-fill"></i>
-                <i class="bi bi-camera-video-fill"></i> -->
+            <div class="head-cta-container d-flex">
+                <span class="search-cta">
+                    <i class="bi bi-search"></i>
+                </span>
                 <div class="profile">
-                    <span (click)="toggleProfile()" class="profile-icon-span">
-                        <i class="bi bi-person-fill"></i>
+                    <span (click)="toggleProfile()" class="profile-cta-span">
+                        <i class="bi bi-person-lines-fill"></i>
                     </span>
                     @if(hasProfile){
                     <div class="profile-box">
