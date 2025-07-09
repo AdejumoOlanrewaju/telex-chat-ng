@@ -187,7 +187,7 @@ export class HomeComponent implements OnInit {
     console.log(this.activeChatUserId);
     console.log(user.uid);
     
-    
+    this.openChatWith(user)
  
   }
 
