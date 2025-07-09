@@ -40,10 +40,15 @@
                 </div>
                 <div class="d-flex flex-column">
                     <span *ngIf="user.lastMessage?.timeStamp as lastMsg" class="time-text">{{ formatMessageTime(lastMsg)
-                        }} </span>
+                        }}
+                    </span>
+
+
                     <ng-container *ngIf="getUnreadCountForUser(user)">
-                        <span class="un-msg-text">new</span>
+                        
+                        <span *ngIf="activeChatUserId !== user.uid" class="un-msg-text">new</span>
                     </ng-container>
+
                     <!-- ((status.lastChanged | date :
                         'shortTime'))}}-->
 

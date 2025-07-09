@@ -44,7 +44,8 @@ export class HomeComponent implements OnInit {
   chats = this.chatService.chats
   watchingInterval: any = null;
   userSignal = toSignal(authState(this.auth))
-  clickedChat = false
+  activeChatUserId : string | null = null
+
 
   constructor() {
 
@@ -88,24 +89,20 @@ export class HomeComponent implements OnInit {
       chat.users.includes(currentUserId) && chat.users.includes(user.uid)
     );
 
-    if(!this.clickedChat){
-      if (!possibleChat) return false;
-  
-      const lastSeen = possibleChat.lastSeen?.[currentUserId];
-      const updatedAt = possibleChat.updatedAt;
-  
-      if (!updatedAt) return false;
-  
-  
-      if (updatedAt?.toMillis && lastSeen?.toMillis) {
-        if (updatedAt.toMillis() > lastSeen.toMillis()) {
-          return true;
-        }
+
+    if (!possibleChat) return false;
+
+    const lastSeen = possibleChat.lastSeen?.[currentUserId];
+    const updatedAt = possibleChat.updatedAt;
+
+    if (!updatedAt) return false;
+
+
+    if (updatedAt?.toMillis && lastSeen?.toMillis) {
+      if (updatedAt.toMillis() > lastSeen.toMillis()) {
+        return true;
       }
     }
-
-    this.clickedChat = false
-
 
     return false;
   }
@@ -121,7 +118,7 @@ export class HomeComponent implements OnInit {
     if (!chat) {
       // Create new chat, do NOT mark as read yet (no message yet)
       return;
-    } else {      
+    } else {
       if (chat.lastMessage && chat.updatedAt) {
         // Only mark as read if there are messages
 
@@ -164,12 +161,12 @@ export class HomeComponent implements OnInit {
   }
 
   async selectUser(user: any) {
-    this.clickedChat = true
+    this.clickChatVisibility(user)
     this.selectedUser.set(user);
     this.receiverId.set(user.uid)
     const sender = this.senderId()
     const receiver = this.receiverId()
-    
+
     if (sender && receiver) {
       this.getMessages()
     }
@@ -177,12 +174,21 @@ export class HomeComponent implements OnInit {
     await updateDoc(userRef, {
       lastSeen: serverTimestamp()
     });
-     this.openChatWith(user)
+    this.openChatWith(user)
 
     this.sideMenu.nativeElement.classList.add("slideOut")
     this.sideMenu.nativeElement.classList.remove("slideIn")
     this.ctMainContainer.nativeElement.classList.add("slideIn")
     this.ctMainContainer.nativeElement.classList.remove("slideOut")
+  }
+
+  async clickChatVisibility(user: any) {
+    this.activeChatUserId = user?.uid
+    console.log(this.activeChatUserId);
+    console.log(user.uid);
+    
+    
+ 
   }
 
   showMainPanel() {
