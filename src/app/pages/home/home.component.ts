@@ -97,7 +97,7 @@ export class HomeComponent implements OnInit {
       if (!updatedAt) return false;
   
   
-      if (updatedAt.toMillis && lastSeen.toMillis) {
+      if (updatedAt?.toMillis && lastSeen?.toMillis) {
         if (updatedAt.toMillis() > lastSeen.toMillis()) {
           return true;
         }
