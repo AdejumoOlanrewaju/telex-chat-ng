@@ -27,6 +27,7 @@ export class HomeComponent implements OnInit {
 
   protected messageControl = new FormControl('')
   public searchInput = new FormControl('')
+  public searchChatInput = new FormControl('')
   public dataRef = collection(this.db, "messages")
   public messageUnsbscribers: (() => void)[] = []
 
@@ -44,8 +45,8 @@ export class HomeComponent implements OnInit {
   chats = this.chatService.chats
   watchingInterval: any = null;
   userSignal = toSignal(authState(this.auth))
-  activeChatUserId : string | null = null
-
+  activeChatUserId: string | null = null
+  isSearchOpen: boolean = false
 
   constructor() {
 
@@ -79,6 +80,14 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatService.loadChats()
+  }
+
+  toggleChatSearch() {
+    this.isSearchOpen = !this.isSearchOpen
+  }
+
+  closeChatSearch() {
+    this.isSearchOpen = false
   }
 
   getUnreadCountForUser(user: any) {
@@ -186,9 +195,9 @@ export class HomeComponent implements OnInit {
     this.activeChatUserId = user?.uid
     console.log(this.activeChatUserId);
     console.log(user.uid);
-    
+
     this.openChatWith(user)
- 
+
   }
 
   showMainPanel() {
@@ -243,6 +252,35 @@ export class HomeComponent implements OnInit {
       this.signedInUsers = this.allUsers.filter((user: any) => {
         return user.displayName.toLowerCase().includes(searchVal)
       })
+
+    }
+  }
+
+  searchChatFunc(messages: any[]) {
+    const searchValue = this.searchChatInput.value?.toLowerCase()
+
+
+    if (searchValue?.trim() == "" || messages.length == 0) return
+
+    const foundIndex = messages.findIndex((msg) => {
+      console.log(searchValue);
+      console.log(msg.text.toLowerCase().includes(searchValue));
+
+      return msg.text.toLowerCase().includes(searchValue)
+    })
+
+
+    if (foundIndex !== -1) {
+      const messageEl = document.getElementById(`msg-${foundIndex}`)
+      if (messageEl) {
+        messageEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        messageEl.classList.add("highlighted")
+        setTimeout(() => {
+          messageEl.classList.remove("highlighted")
+        }, 2000)
+      }
+    } else {
+      console.log('No message found');
 
     }
   }

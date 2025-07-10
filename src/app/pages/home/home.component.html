@@ -15,6 +15,8 @@
                 <input class="search-input" (input)="searchUserFunc()" [formControl]="searchInput" type="text"
                     name="search" id="" placeholder="Search">
             </div>
+
+          
         </div>
 
         <div class="chat-el-container">
@@ -86,7 +88,7 @@
             </div>
 
             <div class="head-cta-container d-flex">
-                <span class="search-cta">
+                <span (click)="toggleChatSearch()" class="search-cta">
                     <i class="bi bi-search"></i>
                 </span>
                 <div class="profile">
@@ -106,10 +108,32 @@
                     }
                 </div>
             </div>
+
+            <div [class.active] = "isSearchOpen" class="search-func-div">
+                <div class="search-bar-util-search">
+                  <input (keyup.enter)="searchChatFunc(this.chatService.messages())" [formControl]="searchChatInput" type="text" placeholder="Search for Product" />
+                  <button (click)="searchChatFunc(this.chatService.messages())" class="search-icon-span mobile-search-btn">
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M9.93946 9.11412C10.6582 8.21557 11.088 7.0758 11.088 5.83565C11.088 2.93483 8.73646 0.583252 5.83565 0.583252C2.93483 0.583252 0.583252 2.93483 0.583252 5.83565C0.583252 8.73646 2.93483 11.088 5.83565 11.088C7.0758 11.088 8.21557 10.6582 9.11412 9.93946L12.4203 13.2457C12.6482 13.4736 13.0177 13.4736 13.2457 13.2457C13.4736 13.0177 13.4736 12.6482 13.2457 12.4203L9.93946 9.11412ZM5.83565 9.9267C3.57622 9.9267 1.74459 8.09507 1.74459 5.83565C1.74459 3.57622 3.57622 1.74459 5.83565 1.74459C8.09507 1.74459 9.9267 3.57622 9.9267 5.83565C9.9267 8.09507 8.09507 9.9267 5.83565 9.9267Z"
+                        fill="#0F0F0F"
+                      />
+                    </svg>
+                  </button>
+                </div>
+            </div>
         </div>
 
         <div class="chat-box">
-            <div *ngFor="let m of this.chatService.messages();">
+            <div class="message-item-container" *ngFor="let m of this.chatService.messages(); let i = index" [attr.id] = "'msg-' + i">
                 <div [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
                     <span class="email-txt">{{m.email}}</span>
                     <span class="message-txt">{{m.text}}</span>
