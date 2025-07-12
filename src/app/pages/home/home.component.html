@@ -87,12 +87,12 @@
                 </div>
             </div>
 
-            <div class="head-cta-container d-flex">
-                <span (click)="toggleChatSearch()" class="search-cta">
+            <div (click)="open($event)" class="head-cta-container d-flex">
+                <span (click)="toggleChatSearch($event)" class="search-cta">
                     <i class="bi bi-search"></i>
                 </span>
                 <div class="profile">
-                    <span (click)="toggleProfile()" class="profile-cta-span">
+                    <span (click)="toggleProfile($event)" class="profile-cta-span">
                         <i class="bi bi-person-lines-fill"></i>
                     </span>
                     @if(hasProfile){
@@ -109,7 +109,7 @@
                 </div>
             </div>
 
-            <div [class.active] = "isSearchOpen" class="search-func-div">
+            <div (click)="open($event)" [class.active] = "isSearchOpen" class="search-func-div">
                 <div class="search-bar-util-search">
                   <input (keyup.enter)="searchChatFunc(this.chatService.messages())" [formControl]="searchChatInput" type="text" placeholder="Search for Product" />
                   <button (click)="searchChatFunc(this.chatService.messages())" class="search-icon-span mobile-search-btn">
@@ -143,7 +143,7 @@
 
         </div>
 
-        <div class="message-box">
+        <div [class.show] = "isMessageBox" class="message-box">
             <div class="message-input-container">
                 <button class="doc-btn">
                     <i class="bi bi-paperclip rotate-45"></i>

@@ -28,11 +28,9 @@ export class ChatService {
 
 
   async storeUsersInfo(user: any, displayName: string | null, email: string | null, photoURL: string | null) {
-    console.log(user)
     if (user) {
       const dataRef = doc(this.db, "users", user.user.uid)
       const snapshot = await getDoc(dataRef)
-      console.log(displayName)
       if (!snapshot.exists()) {
         await setDoc(dataRef, {
           email: email,
@@ -40,7 +38,6 @@ export class ChatService {
           uid: user.user.uid,
           profilePic: photoURL || ''
         })
-        console.log("saved")
       }
     }
   }
@@ -83,7 +80,6 @@ export class ChatService {
       }
     }, { merge: true });
 
-    console.log('Message sent and chat updated');
   }
 
   async getMessages(senderId: string | undefined, receiverId: string | undefined) {
@@ -127,22 +123,18 @@ export class ChatService {
 
   async markAsRead(chatId: any) {
     this.marked.set(false)
-    console.log(this.marked());
     
     try{
-      console.log('Mark as read clicked, chatId:', chatId);
       const chatRef = doc(this.db, `chats/${chatId}`);
       await updateDoc(chatRef, {
         [`lastSeen.${this.currentUserId()}`]: serverTimestamp()
       });
   
-      console.log('lastSeen updated successfully');
     }catch(err){
-      console.log(err);
+      console.error(err);
       
     }finally{
       this.marked.set(true)
-      console.log(this.marked());
       
     }
   }

@@ -1,4 +1,4 @@
-import { Component, effect, ElementRef, inject, OnInit, signal, ViewChild, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, HostListener, inject, OnInit, signal, ViewChild, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl } from "@angular/forms"
 import { Auth, authState, signOut } from '@angular/fire/auth';
@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit {
   userSignal = toSignal(authState(this.auth))
   activeChatUserId: string | null = null
   isSearchOpen: boolean = false
+  isMessageBox: boolean = false
 
   constructor() {
 
@@ -67,7 +68,6 @@ export class HomeComponent implements OnInit {
           setTimeout(() => {
             data.forEach((user: { uid: string; }) => {
               const status = this.realtimeService.getUserStatus(user.uid);
-              // console.log(`Status for ${user.uid}:`, status);
             });
           }, 1000);
         })
@@ -82,8 +82,10 @@ export class HomeComponent implements OnInit {
     this.chatService.loadChats()
   }
 
-  toggleChatSearch() {
+  toggleChatSearch(ev : MouseEvent) {
+    ev.stopPropagation()
     this.isSearchOpen = !this.isSearchOpen
+    this.hasProfile = false
   }
 
   closeChatSearch() {
@@ -132,7 +134,6 @@ export class HomeComponent implements OnInit {
         // Only mark as read if there are messages
 
         await this.chatService.markAsRead(chat.id);
-        console.log(`Marked existing chat as read with ${user.displayName}`);
       }
     }
 
@@ -160,7 +161,6 @@ export class HomeComponent implements OnInit {
             return timeB - timeA
           })
         });
-      // console.log(users[index])
       this.messageUnsbscribers.push(unsubscribe)
     })
 
@@ -170,6 +170,12 @@ export class HomeComponent implements OnInit {
   }
 
   async selectUser(user: any) {
+    this.sideMenu.nativeElement.classList.add("slideOut")
+    this.sideMenu.nativeElement.classList.remove("slideIn")
+    this.ctMainContainer.nativeElement.classList.add("slideIn")
+    this.ctMainContainer.nativeElement.classList.remove("slideOut")
+
+    this.isMessageBox = true
     this.clickChatVisibility(user)
     this.selectedUser.set(user);
     this.receiverId.set(user.uid)
@@ -185,16 +191,12 @@ export class HomeComponent implements OnInit {
     });
     this.openChatWith(user)
 
-    this.sideMenu.nativeElement.classList.add("slideOut")
-    this.sideMenu.nativeElement.classList.remove("slideIn")
-    this.ctMainContainer.nativeElement.classList.add("slideIn")
-    this.ctMainContainer.nativeElement.classList.remove("slideOut")
+
   }
 
   async clickChatVisibility(user: any) {
     this.activeChatUserId = user?.uid
-    console.log(this.activeChatUserId);
-    console.log(user.uid);
+
 
     this.openChatWith(user)
 
@@ -225,8 +227,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/login'])
   }
 
-  toggleProfile() {
+  toggleProfile(ev : MouseEvent) {
+    ev.stopPropagation()
     this.hasProfile = !this.hasProfile
+    this.isSearchOpen = false
   }
 
   async getMessages() {
@@ -236,7 +240,6 @@ export class HomeComponent implements OnInit {
       await this.chatService.getMessages(this.senderId(), this.receiverId())
     }
     this.chatService.getMessages(sender, receiver)
-    // console.log(this.chatService.messages())
   }
 
   isCurrentUser(userId: any) {
@@ -259,16 +262,11 @@ export class HomeComponent implements OnInit {
   searchChatFunc(messages: any[]) {
     const searchValue = this.searchChatInput.value?.toLowerCase()
 
-
     if (searchValue?.trim() == "" || messages.length == 0) return
 
     const foundIndex = messages.findIndex((msg) => {
-      console.log(searchValue);
-      console.log(msg.text.toLowerCase().includes(searchValue));
-
       return msg.text.toLowerCase().includes(searchValue)
     })
-
 
     if (foundIndex !== -1) {
       const messageEl = document.getElementById(`msg-${foundIndex}`)
@@ -319,16 +317,26 @@ export class HomeComponent implements OnInit {
     const snapShot = await getDocs(snapRef);
 
     snapShot.docs.forEach(doc => {
-      console.log({
+      return {
         id: doc.id,
         ...doc.data()
-      });
+      }
     });
   }
 
   cleanupMessageListeners() {
     this.messageUnsbscribers.forEach(unsub => unsub())
     this.messageUnsbscribers = []
+  }
+
+  @HostListener('document:click')
+  handleDocumentClick(){
+    this.hasProfile = false
+    this.isSearchOpen = false
+  }
+
+  open(ev : MouseEvent){
+    ev.stopPropagation()
   }
 
   ngOnDestroy() {

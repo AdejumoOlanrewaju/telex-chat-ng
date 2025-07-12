@@ -17,7 +17,6 @@ export class RealtimeService {
       if(!user) return;
 
       const uid = user.uid
-      console.log(user.uid)
       const statusRef = ref(this.db, `status/${uid}`)
       const isOffline = {status : 'offline', lastChanged : serverTimestamp()}
       const isOnline = {status : 'online', lastChanged : serverTimestamp()}

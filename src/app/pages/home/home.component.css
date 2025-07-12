@@ -61,6 +61,7 @@
     background-color: hsl(0, 0%, 100%);
     padding: 10px;
     border-radius: 10px;
+    cursor : pointer;
     /* margin-top: 20px; */
 }
 
@@ -218,10 +219,14 @@
 .chat-main-container .message-box {
     height: 55px;
     background-color: rgb(147 147 147 / 20%);
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: space-between;
     padding: 0px 20px;
+}
+
+.chat-main-container .message-box.show{
+    display: flex;
 }
 
 .message-input-container {
@@ -275,6 +280,7 @@
     padding: 10px;
     border-radius: 7px;
     width: 130px;
+    cursor: auto;
 }
 
 .profile-box .email-txt {
