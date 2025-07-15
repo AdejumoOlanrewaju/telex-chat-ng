@@ -9,9 +9,10 @@ import { ChatService } from '../../services/chat.service';
 import { RealtimeService } from '../../services/realtime.service';
 import { HoursAgoPipe } from "../../Pipe/hours-ago.pipe";
 import { toSignal } from "@angular/core/rxjs-interop"
+import { TimeAgoPipe } from '../../Pipe/time-ago.pipe';
 @Component({
   selector: 'app-home',
-  imports: [ReactiveFormsModule, CommonModule, HoursAgoPipe],
+  imports: [ReactiveFormsModule, CommonModule, HoursAgoPipe, TimeAgoPipe],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -59,15 +60,13 @@ export class HomeComponent implements OnInit {
       this.getCurrentUserInfo()
       if (user) {
         this.signedInUsersFunc().then((data) => {
-          // this.receiverId.set(data[0].uid)
-          // this.selectedUser.set(data[0])
           this.getMessages()
           data.forEach((user: any) => {
             this.realtimeService.trackUser(user.uid)
           })
           setTimeout(() => {
             data.forEach((user: { uid: string; }) => {
-              const status = this.realtimeService.getUserStatus(user.uid);
+              this.realtimeService.getUserStatus(user.uid);
             });
           }, 1000);
         })
@@ -82,7 +81,7 @@ export class HomeComponent implements OnInit {
     this.chatService.loadChats()
   }
 
-  toggleChatSearch(ev : MouseEvent) {
+  toggleChatSearch(ev: MouseEvent) {
     ev.stopPropagation()
     this.isSearchOpen = !this.isSearchOpen
     this.hasProfile = false
@@ -184,6 +183,8 @@ export class HomeComponent implements OnInit {
 
     if (sender && receiver) {
       this.getMessages()
+      console.log(this.chatService.messages())
+
     }
     const userRef = doc(this.db, `users/${this.senderId()}`);
     await updateDoc(userRef, {
@@ -214,6 +215,7 @@ export class HomeComponent implements OnInit {
       let messageVal: any = this.messageControl.value?.trim()
       if (messageVal !== "") {
         this.chatService.sendMessage(this.senderId(), this.receiverId(), messageVal)
+        this.scrollToBottomFunc()
       }
       this.messageControl.setValue('')
       this.getMessages()
@@ -227,7 +229,7 @@ export class HomeComponent implements OnInit {
     this.router.navigate(['/login'])
   }
 
-  toggleProfile(ev : MouseEvent) {
+  toggleProfile(ev: MouseEvent) {
     ev.stopPropagation()
     this.hasProfile = !this.hasProfile
     this.isSearchOpen = false
@@ -239,7 +241,7 @@ export class HomeComponent implements OnInit {
     if (sender && receiver) {
       await this.chatService.getMessages(this.senderId(), this.receiverId())
     }
-    this.chatService.getMessages(sender, receiver)
+    // this.chatService.getMessages(sender, receiver)
   }
 
   isCurrentUser(userId: any) {
@@ -324,18 +326,31 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  scrollToBottomFunc() {
+    setTimeout(() => {
+      const el = document.querySelector(".chat-box")
+      if (el) {
+        el.scrollTop = el.scrollHeight
+      }
+    }, 100)
+  }
+
+  trackByMessageId(index: number, item: any): string {
+    return item.id || index.toString(); // Adjust depending on your message model
+  }
+
   cleanupMessageListeners() {
     this.messageUnsbscribers.forEach(unsub => unsub())
     this.messageUnsbscribers = []
   }
 
   @HostListener('document:click')
-  handleDocumentClick(){
+  handleDocumentClick() {
     this.hasProfile = false
     this.isSearchOpen = false
   }
 
-  open(ev : MouseEvent){
+  open(ev: MouseEvent) {
     ev.stopPropagation()
   }
 

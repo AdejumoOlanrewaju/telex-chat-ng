@@ -133,10 +133,13 @@
         </div>
 
         <div class="chat-box">
-            <div class="message-item-container" *ngFor="let m of this.chatService.messages(); let i = index" [attr.id] = "'msg-' + i">
+            <div class="message-item-container" *ngFor="let m of this.chatService.messages(); let i = index; trackBy: trackByMessageId" [attr.id] = "'msg-' + i">
                 <div [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
                     <span class="email-txt">{{m.email}}</span>
-                    <span class="message-txt">{{m.text}}</span>
+                    <div class="d-flex justify-content-between">
+                        <span class="message-txt">{{m.text}}</span>
+                        <span>{{m.timeStamp | timeAgo}}</span>
+                    </div>
                     <!-- <span>{{m.status}}</span> -->
                 </div>
             </div>
