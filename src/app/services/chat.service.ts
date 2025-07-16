@@ -29,31 +29,38 @@ export class ChatService {
 
   async storeUsersInfo(user: any, displayName: string | null, email: string | null, photoURL: string | null) {
     if (user) {
-      const dataRef = doc(this.db, "users", user.user.uid)
+      const dataRef = doc(this.db, "users", user.uid)
       const snapshot = await getDoc(dataRef)
       if (!snapshot.exists()) {
         await setDoc(dataRef, {
           email: email,
           displayName: displayName || '',
-          uid: user.user.uid,
+          uid: user.uid,
           profilePic: photoURL || ''
         })
       }
     }
   }
 
-  async getSignedInUsers(currentUserId: any) {
+   async getSignedInUsers(currentUserId: any) {
     const queryData = query(collection(this.db, "users"), where('uid', '!=', currentUserId))
     const querySnapShot = (await getDocs(queryData)).docs.map(doc => doc.data())
     return querySnapShot;
   }
 
-  async getCurrentUserInfo(id: any) {
-    const queryData = doc(this.db, "users", id)
-    const querySnapShot = (await getDoc(queryData)).data()
-    return querySnapShot;
+  getCurrentUserInfo(id: any, callback: (data: any) => void): () => void {
+    const userRef = doc(this.db, "users", id);
+    const unsubscribe = onSnapshot(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        callback(snapshot.data());
+      } else {
+        callback(null);
+      }
+    });
 
+    return unsubscribe; // Caller can use this to stop listening later
   }
+
 
   async sendMessage(senderId: string, receiverId: string, text: string) {
     const chatId = [senderId, receiverId].sort().join('_');
@@ -123,19 +130,19 @@ export class ChatService {
 
   async markAsRead(chatId: any) {
     this.marked.set(false)
-    
-    try{
+
+    try {
       const chatRef = doc(this.db, `chats/${chatId}`);
       await updateDoc(chatRef, {
         [`lastSeen.${this.currentUserId()}`]: serverTimestamp()
       });
-  
-    }catch(err){
+
+    } catch (err) {
       console.error(err);
-      
-    }finally{
+
+    } finally {
       this.marked.set(true)
-      
+
     }
   }
 

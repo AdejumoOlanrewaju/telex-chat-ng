@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, ErrorFn, sendEmailVerification, signInWithEmailAndPassword } from '@angular/fire/auth';
+import { Auth, createUserWithEmailAndPassword, ErrorFn, sendEmailVerification, signInWithEmailAndPassword, updateProfile } from '@angular/fire/auth';
 import { Router } from '@angular/router';
 import { ChatService } from './chat.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,22 +20,18 @@ export class AuthService {
     profilePicControl: any) {
     try {
       const email = emailControl.value;
-      const password = passwordControl.value
-
+      const password = passwordControl.value;
       const cred = await createUserWithEmailAndPassword(this.auth, email, password)
-      console.log(cred.user.uid)
-      this.chatService.storeUsersInfo(
-        cred,
-        nameControl.value,
-        emailControl.value,
-        profilePicControl.value
-      )
+      await updateProfile(cred.user, {
+        displayName : nameControl.value,
+        photoURL : profilePicControl.value
+      })
+
       await sendEmailVerification(cred.user)
-      this.alertService.showSuccess("Signup successful", 7000)
-      this.alertService.showInfo("A verification link has been sent to your email (spam)")
+      this.alertService.showSuccess("Signup successful")
+      this.alertService.showInfo("A verification link has been sent to your email (spam)", 7000)
+
       this.router.navigate(['/login'])
-      // setTimeout(() => {
-      // }, 7000)
       return cred
     } catch (err: ErrorFn | any) {
       this.snackBar.open(err, "ok", {
@@ -52,6 +48,9 @@ export class AuthService {
         await signOut(this.auth)
         this.alertService.showError('Pls verify email to sign in')
       } else {
+        console.log(cred);
+        const user = cred.user
+        this.chatService.storeUsersInfo(user, user.displayName, user.email, user.photoURL)
         this.router.navigate(['/chat'])
       }
     } catch (err: ErrorFn | any) {

@@ -15,50 +15,78 @@ import { AlertServiceService } from '../../services/alert-service.service';
 })
 export class LoginComponent {
 
-  showPs: boolean = false
-  loading: boolean = false
-  @ViewChild('passwordInput') passwordInput !: ElementRef;
+  // Toggle for showing or hiding password input
+  showPs: boolean = false;
 
-  private auth = inject(Auth)
-  private router = inject(Router)
-  private authService = inject(AuthService)
-  private alertService = inject(AlertServiceService)
-  private snackBar = inject(MatSnackBar)
+  // State for showing loading spinner or disabling buttons
+  loading: boolean = false;
 
-  protected emailControl = new FormControl('', [Validators.required, Validators.email])
-  protected passwordControl = new FormControl('', [Validators.required, Validators.minLength(6)])
+  // Access to the password input field in the template
+  @ViewChild('passwordInput') passwordInput!: ElementRef;
+
+  // Injecting Firebase Auth instance
+  private auth = inject(Auth);
+
+  // Angular Router for navigation after login
+  private router = inject(Router);
+
+  // Custom auth service to handle login logic
+  private authService = inject(AuthService);
+
+  // Service to show alerts/snackbars
+  private alertService = inject(AlertServiceService);
+
+  // Angular Material snackbar for showing error messages
+  private snackBar = inject(MatSnackBar);
+
+  // Email input control with validation
+  protected emailControl = new FormControl('', [
+    Validators.required,
+    Validators.email
+  ]);
+
+  // Password input control with validation
+  protected passwordControl = new FormControl('', [
+    Validators.required,
+    Validators.minLength(6)
+  ]);
 
   constructor() {
-    const user = this.auth.currentUser
+    // Optional: Force refresh of current user's auth state every 1.5 seconds
+    const user = this.auth.currentUser;
     setInterval(() => {
-      user?.reload()
-    }, 1500)
-
-    // if (user?.emailVerified) {
-    //   this.alertService.showSuccess('Email has been verfied successfully', 9000)
-    // }
-
-
+      user?.reload();
+    }, 1500);
   }
 
+  /**
+   * Attempts to log the user in using the email and password fields.
+   */
   async login() {
     try {
-      this.loading = true
+      this.loading = true;
+
+      // Ensure form is valid before submitting
       if (this.formValid()) {
-        await this.authService.login(this.emailControl.value, this.passwordControl.value)
+        await this.authService.login(this.emailControl.value, this.passwordControl.value);
       }
     } catch (error: any) {
-      console.log(error?.message)
-      const errorMessage = this.getFirebaseErrorMessage(error?.message)
+      console.log(error?.message);
+
+      // Show user-friendly error message
+      const errorMessage = this.getFirebaseErrorMessage(error?.message);
       this.snackBar.open(errorMessage, "ok", {
         duration: 6000,
         panelClass: ['snackbar-error']
-      })
+      });
     } finally {
-      this.loading = false
+      this.loading = false;
     }
   }
 
+  /**
+   * Maps Firebase error messages to user-friendly versions.
+   */
   getFirebaseErrorMessage(errorCode: string): string {
     const errorMap: { [key: string]: string } = {
       'Firebase: Error (auth/user-not-found).': 'No user found with this email.',
@@ -69,22 +97,21 @@ export class LoginComponent {
       'Firebase: Error (auth/network-request-failed).': 'Network error. Check your internet connection.',
     };
 
-    return errorMap[errorCode];
+    return errorMap[errorCode] || 'An unknown error occurred.';
   }
 
-
-  formValid() {
-    const isValid = this.emailControl.valid && this.passwordControl.valid;
-    return isValid
+  /**
+   * Checks if the login form is valid.
+   */
+  formValid(): boolean {
+    return this.emailControl.valid && this.passwordControl.valid;
   }
 
+  /**
+   * Toggles password visibility on input field.
+   */
   handleEyeClick() {
-    this.showPs = !this.showPs
-    if (this.showPs == true) {
-      this.passwordInput.nativeElement.type = "text"
-    } else {
-      this.passwordInput.nativeElement.type = "password"
-    }
+    this.showPs = !this.showPs;
+    this.passwordInput.nativeElement.type = this.showPs ? "text" : "password";
   }
-
 }

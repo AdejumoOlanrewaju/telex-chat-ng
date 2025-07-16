@@ -3,11 +3,6 @@
         <div class="head-ct">
             <div class="d-flex justify-content-between align-items-center ">
                 <h4 class="mt-0">TelexChat</h4>
-
-                <!-- <div class="d-flex gap-2 align-items-center">
-                    <i class="bi bi-filter filter-icon"></i>
-                    <span class="filter-text">Filter</span>
-                </div> -->
             </div>
 
             <div class="search-bar mt-2">
@@ -15,7 +10,6 @@
                 <input class="search-input" (input)="searchUserFunc()" [formControl]="searchInput" type="text"
                     name="search" id="" placeholder="Search">
             </div>
-
           
         </div>
 
@@ -31,13 +25,11 @@
                             <i class="bi bi-person-fill"></i>
                         </span>
                         }
-                        <div></div>
                         <span *ngIf="getUserStatus(user?.uid)?.status == 'online'" class="status-indicator"></span>
                     </div>
                     <div class="d-flex flex-column">
                         <h5 class="mb-0 chat-el-title">{{ user?.displayName }}</h5>
                         <span class="chat-el-desc-text">{{ user?.lastMessage?.text?.slice(0, 10) }}...</span>
-
                     </div>
                 </div>
                 <div class="d-flex flex-column">
@@ -79,9 +71,9 @@
                             <h5 class="fr-name d-flex align-items-center">
                                 {{ selectedUser()?.displayName }}
                             </h5>
-                            <span *ngIf="getUserStatus(selectedUser()?.uid) as status"
-                                class="duration-sn">{{status.status === 'online' ? 'Online' : 'Last seen ' +
-                                ((status.lastChanged | hoursAgo)) }}</span>
+                            <span *ngIf="getUserStatus(selectedUser()?.uid) as userStatus"
+                                class="duration-sn">{{userStatus.status === 'online' ? 'Online' : 'Last seen ' +
+                                ((userStatus.lastChanged | hoursAgo)) }}</span>
                         </div>
                     </div>
                 </div>
@@ -136,11 +128,10 @@
             <div class="message-item-container" *ngFor="let m of this.chatService.messages(); let i = index; trackBy: trackByMessageId" [attr.id] = "'msg-' + i">
                 <div [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
                     <span class="email-txt">{{m.email}}</span>
-                    <div class="d-flex justify-content-between">
+                    <div class="d-flex justify-content-between gap-1">
                         <span class="message-txt">{{m.text}}</span>
-                        <span>{{m.timeStamp | timeAgo}}</span>
+                        <span class = "msg-timestamp">{{m.timeStamp | timeAgo}}</span>
                     </div>
-                    <!-- <span>{{m.status}}</span> -->
                 </div>
             </div>
 
@@ -158,8 +149,7 @@
                 <svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" id="send-alt"
                     class="icon glyph">
                     <path
-                        d="M21.88,4.73,16.2,20.65A2,2,0,0,1,14.3,22h0a2,2,0,0,1-1.9-1.31l-2.12-5.52,1.54-1.54,2.49-2.49a1,1,0,1,0-1.42-1.42l-2.49,2.49L8.82,13.76,3.31,11.63a2,2,0,0,1,0-3.83L19.27,2.12a2,2,0,0,1,2.61,2.61Z"
-                        style="fill:#19027d">
+                        d="M21.88,4.73,16.2,20.65A2,2,0,0,1,14.3,22h0a2,2,0,0,1-1.9-1.31l-2.12-5.52,1.54-1.54,2.49-2.49a1,1,0,1,0-1.42-1.42l-2.49,2.49L8.82,13.76,3.31,11.63a2,2,0,0,1,0-3.83L19.27,2.12a2,2,0,0,1,2.61,2.61Z">
                     </path>
                 </svg>
             </button>

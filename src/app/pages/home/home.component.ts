@@ -7,9 +7,9 @@ import { Router } from '@angular/router';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { ChatService } from '../../services/chat.service';
 import { RealtimeService } from '../../services/realtime.service';
-import { HoursAgoPipe } from "../../Pipe/hours-ago.pipe";
+import { HoursAgoPipe } from "../../pipes/hours-ago.pipe";
 import { toSignal } from "@angular/core/rxjs-interop"
-import { TimeAgoPipe } from '../../Pipe/time-ago.pipe';
+import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
 @Component({
   selector: 'app-home',
   imports: [ReactiveFormsModule, CommonModule, HoursAgoPipe, TimeAgoPipe],
@@ -44,11 +44,10 @@ export class HomeComponent implements OnInit {
   allUsers: any[] = [];
   userStatus: any = null
   chats = this.chatService.chats
-  watchingInterval: any = null;
-  userSignal = toSignal(authState(this.auth))
   activeChatUserId: string | null = null
   isSearchOpen: boolean = false
   isMessageBox: boolean = false
+  unsubscribedInfo : any;
 
   constructor() {
 
@@ -145,7 +144,10 @@ export class HomeComponent implements OnInit {
   }
 
   async getCurrentUserInfo() {
-    this.userVar = await this.chatService.getCurrentUserInfo(this.currentUserId())
+    this.unsubscribedInfo = this.chatService.getCurrentUserInfo(this.currentUserId(), (userData) => {
+      this.userVar = userData
+    })
+    // this.userVar = await this.chatService.getCurrentUserInfo(this.currentUserId())
   }
 
   async signedInUsersFunc() {
@@ -342,6 +344,8 @@ export class HomeComponent implements OnInit {
   cleanupMessageListeners() {
     this.messageUnsbscribers.forEach(unsub => unsub())
     this.messageUnsbscribers = []
+    if (this.unsubscribedInfo) this.unsubscribedInfo();
+
   }
 
   @HostListener('document:click')

@@ -1,5 +1,5 @@
 import { Component, ElementRef, inject, ViewChild } from '@angular/core';
-import { Auth, createUserWithEmailAndPassword, onAuthStateChanged } from '@angular/fire/auth';
+import { Auth } from '@angular/fire/auth';
 import { FormControl, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -13,43 +13,61 @@ import { MatSnackBar } from "@angular/material/snack-bar"
   styleUrl: './signup.component.css'
 })
 export class SignupComponent {
+
+  // Controls password visibility
+  showPs: boolean = false;
+
+  // Loading state  showing spinner
+  loading: boolean = false;
+
+  // Reference to password input DOM element
+  @ViewChild('passwordInput') passwordInput!: ElementRef;
+
+  // Custom auth service to create and verify users
+  private authService = inject(AuthService);
+
+  // Angular Material snackbar for feedback messages
+  private snackBar = inject(MatSnackBar);
+
+  // Form controls for signup fields with validation
+  protected nameControl = new FormControl('', [Validators.required]);
+  protected emailControl = new FormControl('', [Validators.required, Validators.email]);
+  protected passwordControl = new FormControl('', [Validators.required, Validators.minLength(6)]);
+  protected profilePicControl = new FormControl(''); // Optional profile picture URL
+
   constructor() { }
-  showPs: boolean = false
-  loading: boolean = false
-  @ViewChild('passwordInput') passwordInput !: ElementRef;
 
-  private auth = inject(Auth)
-  private router = inject(Router)
-  private authService = inject(AuthService)
-  private chatService = inject(ChatService)
-  private snackBar = inject(MatSnackBar)
-
-
-  protected nameControl = new FormControl('', [Validators.required])
-  protected emailControl = new FormControl('', [Validators.required, Validators.email])
-  protected passwordControl = new FormControl('', [Validators.required, Validators.minLength(6)])
-  protected profilePicControl = new FormControl('')
-
+  /**
+   * Handles the signup button click.
+   * Uses custom authService to register a new user and handles error feedback.
+   */
   async signup() {
     try {
-      this.loading = true
-      console.log(this.loading)
+      this.loading = true;
+
       if (this.formValid()) {
-        await this.authService.signup(this.emailControl, this.passwordControl, this.nameControl, this.profilePicControl)
+        await this.authService.signup(
+          this.emailControl,
+          this.passwordControl,
+          this.nameControl,
+          this.profilePicControl
+        );
       }
     } catch (error: any) {
-      console.log(error)
-      const errorMessage = this.getFirebaseErrorMessage(error?.message)
+      console.log(error);
+
+      const errorMessage = this.getFirebaseErrorMessage(error?.message);
       this.snackBar.open(errorMessage, "ok", {
         panelClass: ['snackbar-error']
-      })
+      });
     } finally {
-      this.loading = false
-      console.log(this.loading)
-
+      this.loading = false;
     }
   }
 
+  /**
+   * Maps Firebase error codes to human-readable error messages.
+   */
   getFirebaseErrorMessage(errorCode: string): string {
     const errorMap: { [key: string]: string } = {
       'Firebase: Error (auth/user-not-found).': 'No user found with this email.',
@@ -63,17 +81,20 @@ export class SignupComponent {
     return errorMap[errorCode] || 'An unexpected error occurred. Please try again.';
   }
 
-  formValid() {
-    const isValid = this.nameControl.valid && this.emailControl.valid && this.passwordControl.valid
-    return isValid;
+  /**
+   * Validates the signup form.
+   */
+  formValid(): boolean {
+    return this.nameControl.valid && this.emailControl.valid && this.passwordControl.valid;
   }
 
+  /**
+   * Toggles visibility of the password input field.
+   */
   handleEyeClick() {
-    this.showPs = !this.showPs
-    if (this.showPs == true) {
-      this.passwordInput.nativeElement.type = "text"
-    } else {
-      this.passwordInput.nativeElement.type = "password"
-    }
+    this.showPs = !this.showPs;
+    this.passwordInput.nativeElement.type = this.showPs ? "text" : "password";
   }
+
+
 }
