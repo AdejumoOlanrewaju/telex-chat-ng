@@ -18,10 +18,10 @@ export class RealtimeService {
 
       const uid = user.uid
       const statusRef = ref(this.db, `status/${uid}`)
+      const connecteRef = ref(this.db, `.info/connected`)
+      
       const isOffline = {status : 'offline', lastChanged : serverTimestamp()}
       const isOnline = {status : 'online', lastChanged : serverTimestamp()}
-
-      const connecteRef = ref(this.db, `.info/connected`)
 
       onValue(connecteRef, (snapShot) => {
         if(snapShot.val() === false) return;
@@ -38,7 +38,7 @@ export class RealtimeService {
 
     onValue(statusRef, (snapShot) => {
       const data = snapShot.val()
-      if (data) {
+      if (data && typeof data.lastChanged === 'number') {
         this.usersStatus.update((prev) => ({
           ...prev,
           [userId]: {

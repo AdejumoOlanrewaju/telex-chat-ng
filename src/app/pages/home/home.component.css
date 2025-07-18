@@ -517,11 +517,44 @@
 
     }
 
+     .profile-box .email-txt {
+        font-size: 12px;
+    }
+
+    .fr-name {
+        font-size: 18px;
+    }
+
+        .chat-main-container .head-ct i {
+        font-size: 18px;
+    }
+
+    .message-item.sent,
+    .message-item.received {
+        width: 95%;
+    }
+
+      .duration-sn {
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        
+        overflow: hidden;
+        font-size: 12px;
+    }
 }
 
-@media(max-width : 350px) {
-    .profile-box .email-txt {
-        font-size: 12px;
+@media(max-width :380px) {
+   
+  .duration-sn{
+width: 19ch;
+  }
 
+
+}
+
+@media(max-width : 350px){
+    .duration-sn{
+        width: 14ch;
     }
 }

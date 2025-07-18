@@ -72,8 +72,7 @@
                                 {{ selectedUser()?.displayName }}
                             </h5>
                             <span *ngIf="getUserStatus(selectedUser()?.uid) as userStatus"
-                                class="duration-sn">{{userStatus.status === 'online' ? 'Online' : 'Last seen ' +
-                                ((userStatus.lastChanged | hoursAgo)) }}</span>
+                                class="duration-sn">{{userStatus.status === 'online' ? 'Online' : (userStatus.lastChanged | hoursAgo) }}</span>
                         </div>
                     </div>
                 </div>

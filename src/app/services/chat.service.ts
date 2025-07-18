@@ -42,11 +42,20 @@ export class ChatService {
     }
   }
 
-   async getSignedInUsers(currentUserId: any) {
-    const queryData = query(collection(this.db, "users"), where('uid', '!=', currentUserId))
-    const querySnapShot = (await getDocs(queryData)).docs.map(doc => doc.data())
-    return querySnapShot;
-  }
+ getSignedInUsers(currentUserId: string | null, callback: (users: any) => void): () => void {
+  const usersRef = collection(this.db, 'users');
+  const queryRef = query(usersRef, where('uid', '!=', currentUserId));
+
+  const unsubscribe = onSnapshot(queryRef, (snapshot) => {
+    const users = snapshot.docs.map(doc => doc.data());
+    callback(users);
+  }, (error) => {
+    callback(null)
+  });
+
+  return unsubscribe;
+}
+
 
   getCurrentUserInfo(id: any, callback: (data: any) => void): () => void {
     const userRef = doc(this.db, "users", id);

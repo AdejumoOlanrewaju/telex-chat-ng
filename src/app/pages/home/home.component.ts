@@ -47,31 +47,45 @@ export class HomeComponent implements OnInit {
   activeChatUserId: string | null = null
   isSearchOpen: boolean = false
   isMessageBox: boolean = false
-  unsubscribedInfo : any;
+  unsubscribedInfo: any;
 
   constructor() {
 
     onAuthStateChanged(this.auth, (user: any) => {
-      if (!user) this.router.navigate(['login'])
-      this.user = user
-      this.currentUserId.set(user?.uid ?? null);
-      this.senderId.set(user?.uid ?? null)
-      this.getCurrentUserInfo()
-      if (user) {
-        this.signedInUsersFunc().then((data) => {
-          this.getMessages()
-          data.forEach((user: any) => {
-            this.realtimeService.trackUser(user.uid)
-          })
-          setTimeout(() => {
-            data.forEach((user: { uid: string; }) => {
-              this.realtimeService.getUserStatus(user.uid);
-            });
-          }, 1000);
-        })
-      } else {
-
+      if (!user) {
+        this.router.navigate(['login']);
+        return;
       }
+
+      // Set current user in signals
+      this.user = user;
+      this.currentUserId.set(user.uid);
+      this.senderId.set(user.uid);
+
+      // Start tracking current user profile and signed-in users
+      this.getCurrentUserInfo();
+
+      // Load user list in realtime
+      this.signedInUsersFunc();
+
+
+      // Optional: Load previous messages
+      this.getMessages();
+      // if (user) {
+      //   this.signedInUsersFunc().then((data) => {
+      //     this.getMessages()
+      //     data.forEach((user: any) => {
+      //       this.realtimeService.trackUser(user.uid)
+      //     })
+      //     setTimeout(() => {
+      //       data.forEach((user: { uid: string; }) => {
+      //         this.realtimeService.getUserStatus(user.uid);
+      //       });
+      //     }, 1000);
+      //   })
+      // } else {
+
+      // }
 
     })
   }
@@ -150,25 +164,32 @@ export class HomeComponent implements OnInit {
     // this.userVar = await this.chatService.getCurrentUserInfo(this.currentUserId())
   }
 
-  async signedInUsersFunc() {
-    let users = await this.chatService.getSignedInUsers(this.currentUserId())
-    users.forEach((user: any, index: number) => {
-      const unsubscribe = this.chatService.getLastMessageBetweenUsers(this.currentUserId(), user.uid,
-        (lastMsg) => {
-          users[index]['lastMessage'] = lastMsg || '';
-          this.signedInUsers = [...users].sort((a: any, b: any): any => {
-            const timeA = a['lastMessage']?.timeStamp?.seconds || 0
-            const timeB = b['lastMessage']?.timeStamp?.seconds || 0
-            return timeB - timeA
-          })
-        });
-      this.messageUnsbscribers.push(unsubscribe)
-    })
+  signedInUsersFunc() {
+    const currentUserId = this.currentUserId();
 
-    this.allUsers = users;
-    this.signedInUsers = [...users]
-    return this.signedInUsers;
+    const unsubscribe = this.chatService.getSignedInUsers(currentUserId, (users: any[]) => {
+      users.forEach((user: any, index: number) => {
+        const unsub = this.chatService.getLastMessageBetweenUsers(currentUserId, user.uid, (lastMsg) => {
+          users[index]['lastMessage'] = lastMsg || '';
+          this.signedInUsers = [...users].sort((a: any, b: any) => {
+            const timeA = a['lastMessage']?.timeStamp?.seconds || 0;
+            const timeB = b['lastMessage']?.timeStamp?.seconds || 0;
+            return timeB - timeA;
+          });
+        });
+      
+        this.realtimeService.trackUser(user.uid);
+        this.realtimeService.getUserStatus(user.uid);
+        this.messageUnsbscribers.push(unsub);
+      });
+
+      this.allUsers = users;
+    });
+
+    this.messageUnsbscribers.push(unsubscribe); // Save user list unsubscribe too
+    return this.allUsers
   }
+
 
   async selectUser(user: any) {
     this.sideMenu.nativeElement.classList.add("slideOut")
