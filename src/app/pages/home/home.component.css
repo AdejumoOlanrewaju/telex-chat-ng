@@ -169,7 +169,7 @@
 }
 
 .chat-box {
-    height: calc(100vh - 125px);
+    height: calc(100dvh - 125px);
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -487,8 +487,8 @@
 
     .chat-main-container {
         transform: translateX(100%);
-        height: 100vh;
-        /* height: 100dvh; */
+        /* height: 100vh; */
+        height: 100dvh;
     }
 
     .chat-el-container {
