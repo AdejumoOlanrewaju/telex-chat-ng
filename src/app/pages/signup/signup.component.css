@@ -77,9 +77,9 @@
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    background-image: linear-gradient(to top, #00c5fba3 0%, #005aeac0 100%);
-    top: 0px;
+    background-image: linear-gradient(to top, #048cb17b 0%, #03337faa 100%);
     position: absolute;
+    top: 0px;
     right: 0px;
     z-index: -1;
 }
