@@ -14,8 +14,7 @@
         </div>
 
         <div class="chat-el-container">
-            @for(user of signedInUsers; track $index){
-            <div class="chat-el" (click)="selectUser(user)">
+            <div class="chat-el" *ngFor="let user of signedInUsers; trackBy: trackByUid" (click)="selectUser(user)">
                 <div class="d-flex align-items-center gap-2">
                     <div class="profile-img-container">
                         @if(user?.profilePic){
@@ -49,7 +48,7 @@
                     <!-- {{getUnreadCountForUser(user)}} -->
                 </div>
             </div>
-            }
+            
         </div>
     </div>
     <div #chatMainContainer class="chat-main-container">

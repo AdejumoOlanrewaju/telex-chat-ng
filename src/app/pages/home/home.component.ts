@@ -10,6 +10,7 @@ import { RealtimeService } from '../../services/realtime.service';
 import { HoursAgoPipe } from "../../pipes/hours-ago.pipe";
 import { toSignal } from "@angular/core/rxjs-interop"
 import { TimeAgoPipe } from '../../pipes/time-ago.pipe';
+import { AlertServiceService } from '../../services/alert-service.service';
 @Component({
   selector: 'app-home',
   imports: [ReactiveFormsModule, CommonModule, HoursAgoPipe, TimeAgoPipe],
@@ -24,6 +25,7 @@ export class HomeComponent implements OnInit {
   private db = inject(Firestore)
   private router = inject(Router)
   public chatService = inject(ChatService)
+  public alertService = inject(AlertServiceService)
   public realtimeService = inject(RealtimeService)
 
   protected messageControl = new FormControl('')
@@ -304,7 +306,7 @@ export class HomeComponent implements OnInit {
       }
     } else {
       console.log('No message found');
-
+      this.alertService.showError("No message found", 4000)
     }
   }
 
@@ -360,6 +362,10 @@ export class HomeComponent implements OnInit {
 
   trackByMessageId(index: number, item: any): string {
     return item.id || index.toString(); // Adjust depending on your message model
+  }
+
+  trackByUid(index: number, user: any){
+    return user.uid;
   }
 
   cleanupMessageListeners() {
