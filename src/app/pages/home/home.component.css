@@ -103,6 +103,9 @@
 
 .chat-main-container {
     /* background-color: rgb(147 147 147 / 27%); */
+    display: flex;
+    flex-direction: column;
+    height : 100dvh
 }
 
 .chat-main-container .head-ct {
@@ -169,12 +172,14 @@
 }
 
 .chat-box {
-    height: calc(100dvh - 125px);
+    flex: 1;
+    overflow-y: auto;
     padding: 16px;
     display: flex;
     flex-direction: column;
     gap: 22px;
-    overflow-y: auto;
+    min-height: 0;
+    /* Important for flex children to grow/shrink */
 }
 
 .message-item {
@@ -488,7 +493,7 @@
     .chat-main-container {
         transform: translateX(100%);
         /* height: 100vh; */
-        height: 100dvh;
+        /* height: 100dvh; */
     }
 
     .chat-el-container {
