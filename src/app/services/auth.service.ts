@@ -26,12 +26,10 @@ export class AuthService {
         displayName : nameControl.value,
         photoURL : profilePicControl.value
       })
-
-      await sendEmailVerification(cred.user)
       this.alertService.showSuccess("Signup successful")
-      this.alertService.showInfo("A verification link has been sent to your email (spam)", 7000)
-
-      this.router.navigate(['/login'])
+      
+      await sendEmailVerification(cred.user)
+      this.router.navigate(['/verify-email'])
       return cred
     } catch (err: ErrorFn | any) {
       this.snackBar.open(err, "ok", {

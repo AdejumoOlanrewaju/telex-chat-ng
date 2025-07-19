@@ -114,12 +114,12 @@
 }
 
 .head-cta-container {
-    background-color: rgb(0 0 0 / 20%);
+    background-color: rgb(0 0 0 / 13%);
     border-radius: 7px;
 }
 
 .head-cta-container i {
-    color: rgb(21, 21, 21)
+    color: rgb(21 21 21 / 75%);
 }
 
 .search-cta {
@@ -173,7 +173,7 @@
     padding: 16px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 22px;
     overflow-y: auto;
 }
 
@@ -186,13 +186,11 @@
 
 .message-item.sent {
     background-color: #e1ffc7;
-    /* soft green */
     color: #000;
     border-radius: 20px 20px 0 20px;
     width: 75%;
     padding: 10px 15px;
     margin-left: auto;
-    margin-bottom: 10px;
     box-shadow: 0 1px 2px rgb(0 0 0 / 26%);
     animation: slideUpFadeIn 0.25s ease-in-out;
 }
@@ -203,13 +201,11 @@
 
 .message-item.received {
     background-color: #f1f0f0;
-    /* light grey */
     color: #000;
     border-radius: 20px 20px 20px 0;
     width: 75%;
     padding: 10px 15px;
     margin-right: auto;
-    margin-bottom: 10px;
     box-shadow: 0 1px 3px rgb(0 0 0 / 26%);
     animation: slideDownFadeIn 0.25s ease-in-out;
 }
@@ -304,7 +300,7 @@
 }
 
 .send-btn:hover {
-    background-color: #45a049;
+    background-color: var(--primary-color-dark);
 }
 
 .send-btn svg path {
@@ -416,10 +412,9 @@
     display: none;
     position: absolute;
     top: 80px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 95%;
-    max-width: 800px;
+    right: 10px;
+    width: 97%;
+    max-width: 900px;
 }
 
 .search-func-div.active {
@@ -517,7 +512,7 @@
 
     }
 
-     .profile-box .email-txt {
+    .profile-box .email-txt {
         font-size: 12px;
     }
 
@@ -525,7 +520,7 @@
         font-size: 18px;
     }
 
-        .chat-main-container .head-ct i {
+    .chat-main-container .head-ct i {
         font-size: 18px;
     }
 
@@ -534,27 +529,32 @@
         width: 95%;
     }
 
-      .duration-sn {
+    .duration-sn {
         display: block;
         white-space: nowrap;
         text-overflow: ellipsis;
-        
+
         overflow: hidden;
         font-size: 12px;
+    }
+
+    .chat-main-container .message-box {
+        position : sticky;
+        bottom : 0;
     }
 }
 
 @media(max-width :380px) {
-   
-  .duration-sn{
-width: 19ch;
-  }
+
+    .duration-sn {
+        width: 19ch;
+    }
 
 
 }
 
-@media(max-width : 350px){
-    .duration-sn{
+@media(max-width : 350px) {
+    .duration-sn {
         width: 14ch;
     }
 }

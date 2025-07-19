@@ -1,6 +1,11 @@
 /*  */
 :root {
-  --primary-color : #005aea;
+  --primary-color : hsl(217, 100%, 46%);
+  --primary-color-dark : hsl(217, 98%, 38%);
+  --primary-color-dark-1 : hsl(217deg 92.11% 15.76%);
+  --primary-color-link : hsl(217, 86%, 58%);
+  --seconday-color : hsl(123, 40%, 45%);
+  --seconday-color-dark : hsl(123, 40%, 37%);
   --bright-blue: oklch(51.01% 0.274 263.83);
   --electric-violet: oklch(53.18% 0.28 296.97);
   --french-violet: oklch(47.66% 0.246 305.88);
@@ -135,4 +140,11 @@ body {
 
 .snackbar-error {
   --mdc-snackbar-container-color: rgba(202, 40, 7, 0.271);
+}
+
+.acct-cta {
+    color: var(--primary-color-link);
+    font-weight: 600;
+    font-size : 1.1rem;
+    letter-spacing: .5px;
 }

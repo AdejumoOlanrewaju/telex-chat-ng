@@ -32,7 +32,7 @@
                     <label for="inputProfile" class="form-label">Profile Pic(URL)</label>
                     <input [formControl]="profilePicControl" type="text" class="form-control" id="inputProfile">
                 </div>
-                <button [disabled]="!formValid()" type="submit" class="btn btn-primary block w-100 mt-3">
+                <button [disabled]="!formValid() || loading" type="submit" class="btn btn-primary block w-100 mt-3">
                     @if(loading == true){
                     <span class="">
                         <i style="width : fit-content; margin: 0 auto; font-size: 20px;"
@@ -45,7 +45,7 @@
                 </button>
             </form>
             <p class="lg-cta mt-4 text-end">
-                Already have an account? <a routerLink="/login">Login</a>
+                Already have an account? <a class="acct-cta" routerLink="/login">Login</a>
             </p>
         </div>
         <div class="gradient-ball second"></div>

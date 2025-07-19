@@ -1,19 +1,18 @@
 .form-page {
     /* background: linear-gradient(45deg, #005C97, #363795) */
-    background-color: black;
+    background-color: var(--primary-color-dark-1);
 }
 
 .form-wrapper {
-    background-color: hsl(0deg 0% 98% / 10%);
-    /* box-shadow: 0px 2px 3px 2px rgba(0, 0, 0, 0.2); */
+    background-color: hsl(0deg 0% 9% / 10%);
     padding: 40px 30px;
-    /* border: 1px solid hsl(0deg 0% 0% / 12%); */
     border-radius: 10px;
+    -webkit-backdrop-filter: blur(50px);
     backdrop-filter: blur(50px);
-    /* min-height: 70vh; */
     display: flex;
     flex-direction: column;
     justify-content: center;
+    border: 1px solid #ffffff5e;
 }
 
 .form-title {
@@ -92,22 +91,24 @@
     left: 0px;
 }
 
-.email-help{
+.email-help {
     font-size: .85rem;
 }
 
+
+
 @media(max-width : 400px) {
     .form-wrapper {
-        padding: 12px 17px;
-        min-height : 65vh;
+        padding: 12px 22px;
+        min-height: 70vh;
     }
 
-    .form-title{
-        font-size: 2.4rem;
+    .form-title {
+        font-size: 2.3rem;
     }
 
-    .ps-eye-span{
-        width : auto;
+    .ps-eye-span {
+        width: auto;
         min-width: 40px;
     }
 }
