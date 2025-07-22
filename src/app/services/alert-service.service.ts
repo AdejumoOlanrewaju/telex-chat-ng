@@ -28,7 +28,7 @@ export class AlertServiceService {
   }
 
   showInfo(message: string, duration: number = 7000) {
-    this.snackBar.open(message, '', {
+    this.snackBar.open(message, 'Ok', {
       duration,
       panelClass: ['snackbar-info'],
       horizontalPosition: 'right',

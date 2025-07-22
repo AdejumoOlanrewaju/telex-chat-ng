@@ -13,13 +13,27 @@ export class VerifyEmailComponent {
   auth = inject(Auth)
   router = inject(Router)
   alertService = inject(AlertServiceService)
+  verifyClicked : boolean = false
   constructor(){}
 
   async resendVerificationEmail() {
-    const user = this.auth.currentUser;
-    if (user && !user.emailVerified) {
-      await sendEmailVerification(user);
-      this.alertService.showInfo('Verification email sent.', 4000)
+    try{
+      this.verifyClicked = true
+      const user = this.auth.currentUser;
+      console.log(this.auth);
+      console.log(user?.emailVerified);
+      if (user && !user.emailVerified) {
+        
+        await sendEmailVerification(user);
+        console.log(await sendEmailVerification(user));
+        
+        this.alertService.showInfo('Verification email sent.', 4000)
+      }
+
+    }catch(err){
+      console.error(err)
+    }finally{
+      this.verifyClicked = false
     }
   }
 

@@ -306,7 +306,7 @@ export class HomeComponent implements OnInit {
       }
     } else {
       console.log('No message found');
-      this.alertService.showError("No message found", 4000)
+      this.alertService.showError("No message found", 100000)
     }
   }
 

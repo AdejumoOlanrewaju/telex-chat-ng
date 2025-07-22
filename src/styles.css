@@ -115,7 +115,7 @@ body {
 }
 
 .snackbar-success {
-  --mdc-snackbar-container-color: rgba(7, 202, 7, 0.271);
+  --mdc-snackbar-container-color: rgb(3, 66, 3);
   color: white
 }
 
@@ -135,16 +135,20 @@ body {
 }
 
 .snackbar-info {
-  background-color: rgba(138, 164, 6, 0.2);
+  background-color: rgb(2 28 72);
+}
+
+.snackbar-info.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface{
+  background-color: rgb(2 28 72)!important;
 }
 
 .snackbar-error {
-  --mdc-snackbar-container-color: rgba(202, 40, 7, 0.271);
+  --mdc-snackbar-container-color: rgb(65, 12, 2);
 }
 
 .acct-cta {
     color: var(--primary-color-link);
     font-weight: 600;
     font-size : 1.1rem;
-    letter-spacing: .2px;
+    letter-spacing: .1px;
 }

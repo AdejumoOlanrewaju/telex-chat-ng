@@ -1,10 +1,10 @@
 <div class="verify-page">
     <div class="page-content">
-        <img class="img-banner" src="assets/img/verify-email-banner.png" alt="">
+        <img width = "270" height = "270" class="img-banner" src="assets/img/verify-email-banner.png" alt="">
         <h3>Verify your email</h3>
         <p>We've sent a verification link to your email address. Please check your inbox.</p>
         <div class="cta-container">
-            <button class="verify-cta cta-btn"  (click)="resendVerificationEmail()">
+            <button class="verify-cta cta-btn"  (click)="resendVerificationEmail()" [disabled]="verifyClicked">
                 Resend Email
             </button>
             <button class="login-cta cta-btn"  (click)="goToLogin()">
