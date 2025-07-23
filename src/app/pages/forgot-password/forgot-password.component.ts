@@ -13,22 +13,27 @@ export class ForgotPasswordComponent {
   protected emailControl = new FormControl('', [Validators.required, Validators.email])
   private alertService = inject(AlertServiceService)
   private auth = inject(Auth)
+  public loading : boolean = false
   constructor(){}
 
   async forgotPassword(){
     const email = this.emailControl.value?.trim()
-
+    console.log(email);
+    
     if(!email || !this.emailControl.valid){
       this.alertService.showError("Pls enter a valid email", 5000)
       return
     }
     
     try{
+      this.loading = true
       await sendPasswordResetEmail(this.auth, email)
       this.alertService.showSuccess("Password reset link sent. Check your email", 6000)
     }catch(err){
       console.error(err);
       this.alertService.showError("Error sending reset link. Please try again.", 6000)
+    }finally{
+      this.loading = false
     }
   }
 }

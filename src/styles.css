@@ -1,11 +1,11 @@
 /*  */
 :root {
-  --primary-color : hsl(217, 100%, 46%);
-  --primary-color-dark : hsl(217, 98%, 38%);
-  --primary-color-dark-1 : hsl(217deg 92.52% 7.6%);
-  --primary-color-link : hsl(217, 86%, 58%);
-  --seconday-color : hsl(123, 40%, 45%);
-  --seconday-color-dark : hsl(123, 40%, 37%);
+  --primary-color: hsl(217, 100%, 46%);
+  --primary-color-dark: hsl(217, 98%, 38%);
+  --primary-color-dark-1: hsl(217deg 92.52% 7.6%);
+  --primary-color-link: hsl(217, 86%, 58%);
+  --seconday-color: hsl(123, 40%, 45%);
+  --seconday-color-dark: hsl(123, 40%, 37%);
   --bright-blue: oklch(51.01% 0.274 263.83);
   --electric-violet: oklch(53.18% 0.28 296.97);
   --french-violet: oklch(47.66% 0.246 305.88);
@@ -138,8 +138,8 @@ body {
   background-color: rgb(2 28 72);
 }
 
-.snackbar-info.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface{
-  background-color: rgb(2 28 72)!important;
+.snackbar-info.mat-mdc-snack-bar-container .mat-mdc-snackbar-surface {
+  background-color: rgb(2 28 72) !important;
 }
 
 .snackbar-error {
@@ -147,8 +147,14 @@ body {
 }
 
 .acct-cta {
-    color: var(--primary-color-link);
-    font-weight: 600;
-    font-size : 1.1rem;
-    letter-spacing: .1px;
+  color: var(--primary-color-link);
+  font-weight: 600;
+  font-size: 1.1rem;
+  letter-spacing: .1px;
+}
+
+.logo-text {
+  color: var(--primary-color);
+  font-weight: 500;
+  margin-left: 15px;
 }

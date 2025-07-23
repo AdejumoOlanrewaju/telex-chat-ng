@@ -1,13 +1,21 @@
 <div class="verify-page">
     <div class="page-content">
-        <img width = "270" height = "270" class="img-banner" src="assets/img/verify-email-banner.png" alt="">
+        <img width="270" height="270" class="img-banner" src="assets/img/verify-email-banner.png" alt="">
         <h3>Verify your email</h3>
         <p>We've sent a verification link to your email address. Please check your inbox.</p>
         <div class="cta-container">
-            <button class="verify-cta cta-btn"  (click)="resendVerificationEmail()" [disabled]="verifyClicked">
-                Resend Email
+            <button class="verify-cta cta-btn" (click)="resendVerificationEmail()" [disabled]="loading">
+                @if(loading == true){
+                <span class="">
+                    <i style="width : fit-content; margin: 0 auto; font-size: 20px;"
+                        class="bi bi-arrow-clockwise loading d-block">
+                    </i>
+                </span>
+                }@else {
+                <span>Resend Email</span>
+                }
             </button>
-            <button class="login-cta cta-btn"  (click)="goToLogin()">
+            <button class="login-cta cta-btn" (click)="goToLogin()">
                 Proceed to Login
             </button>
         </div>

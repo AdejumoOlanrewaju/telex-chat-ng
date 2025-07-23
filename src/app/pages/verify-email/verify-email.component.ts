@@ -13,12 +13,12 @@ export class VerifyEmailComponent {
   auth = inject(Auth)
   router = inject(Router)
   alertService = inject(AlertServiceService)
-  verifyClicked : boolean = false
+  loading : boolean = false
   constructor(){}
 
   async resendVerificationEmail() {
     try{
-      this.verifyClicked = true
+      this.loading = true
       const user = this.auth.currentUser;
       console.log(this.auth);
       console.log(user?.emailVerified);
@@ -33,7 +33,7 @@ export class VerifyEmailComponent {
     }catch(err){
       console.error(err)
     }finally{
-      this.verifyClicked = false
+      this.loading = false
     }
   }
 
