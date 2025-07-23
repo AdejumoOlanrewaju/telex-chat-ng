@@ -20,13 +20,8 @@ export class VerifyEmailComponent {
     try{
       this.loading = true
       const user = this.auth.currentUser;
-      console.log(this.auth);
-      console.log(user?.emailVerified);
       if (user && !user.emailVerified) {
-        
         await sendEmailVerification(user);
-        console.log(await sendEmailVerification(user));
-        
         this.alertService.showInfo('Verification email sent.', 4000)
       }
 
