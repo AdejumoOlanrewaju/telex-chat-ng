@@ -10,29 +10,36 @@ import { Auth, sendPasswordResetEmail } from '@angular/fire/auth';
   styleUrl: './forgot-password.component.css'
 })
 export class ForgotPasswordComponent {
+  // Email form control with validation
   protected emailControl = new FormControl('', [Validators.required, Validators.email])
+  // Inject required services
   private alertService = inject(AlertServiceService)
   private auth = inject(Auth)
-  public loading : boolean = false
-  constructor(){}
+  // Loading state for button spinner or disabling input
+  public loading: boolean = false
+  constructor() { }
 
-  async forgotPassword(){
+  /**
+   * Handles sending a password reset email
+   */
+  async forgotPassword() {
     const email = this.emailControl.value?.trim()
-    console.log(email);
-    
-    if(!email || !this.emailControl.valid){
+    // Validate email field before sending request
+    if (!email || !this.emailControl.valid) {
       this.alertService.showError("Pls enter a valid email", 5000)
       return
     }
-    
-    try{
+
+    try {
       this.loading = true
+
+      // Send password reset email through Firebase Auth
       await sendPasswordResetEmail(this.auth, email)
       this.alertService.showSuccess("Password reset link sent. Check your email", 6000)
-    }catch(err){
+    } catch (err) {
       console.error(err);
       this.alertService.showError("Error sending reset link. Please try again.", 6000)
-    }finally{
+    } finally {
       this.loading = false
     }
   }

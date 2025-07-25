@@ -12,47 +12,52 @@
             </div>
 
         </div>
- 
+
         <div class="chat-el-container">
-            @if(signedInUsers.length > 0){
-                <div class="chat-el" *ngFor="let user of signedInUsers; trackBy: trackByUid" (click)="selectUser(user)">
-                    <div class="d-flex align-items-center gap-2">
-                        <div class="profile-img-container">
-                            @if(user?.profilePic){
-                            <img class="chat-profile-img" [src]="user?.profilePic" alt="chat user profile image">
-                            }@else {
-                            <span class="profile-icon-span">
-                                <i class="bi bi-person-fill"></i>
-                            </span>
-                            }
-                            <span *ngIf="getUserStatus(user?.uid)?.status == 'online'" class="status-indicator"></span>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <h5 class="mb-0 chat-el-title">{{ user?.displayName }}</h5>
-                            <span class="chat-el-desc-text">{{ user?.lastMessage?.text?.slice(0, 10) }}...</span>
-                        </div>
+            <div *ngIf="isUserListLoading" class="d-flex justify-content-center my-4">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            @if(signedInUsers?.length > 0){
+            <div class="chat-el" *ngFor="let user of signedInUsers; trackBy: trackByUid" (click)="selectUser(user)">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="profile-img-container">
+                        @if(user?.profilePic){
+                        <img class="chat-profile-img" [src]="user?.profilePic" alt="chat user profile image">
+                        }@else {
+                        <span class="profile-icon-span">
+                            <i class="bi bi-person-fill"></i>
+                        </span>
+                        }
+                        <span *ngIf="getUserStatus(user?.uid)?.status == 'online'" class="status-indicator"></span>
                     </div>
                     <div class="d-flex flex-column">
-                        <span *ngIf="user.lastMessage?.timeStamp as lastMsg" class="time-text">{{ formatMessageTime(lastMsg)
-                            }}
-                        </span>
-    
-    
-                        <ng-container *ngIf="getUnreadCountForUser(user)">
-    
-                            <span *ngIf="activeChatUserId !== user.uid" class="un-msg-text">new</span>
-                        </ng-container>
-    
-                        <!-- ((status.lastChanged | date :
-                            'shortTime'))}}-->
-    
-                        <!-- {{getUnreadCountForUser(user)}} -->
+                        <h5 class="mb-0 chat-el-title">{{ user?.displayName }}</h5>
+                        <span class="chat-el-desc-text">{{ user?.lastMessage?.text?.slice(0, 10) }}...</span>
                     </div>
                 </div>
-            }@else {
-                <div class="empty-user-container">
-                    <h3 class="empty-title">No User Yet</h3>
+                <div class="d-flex flex-column">
+                    <span *ngIf="user.lastMessage?.timeStamp as lastMsg" class="time-text">{{ formatMessageTime(lastMsg)
+                        }}
+                    </span>
+
+
+                    <ng-container *ngIf="getUnreadCountForUser(user)">
+
+                        <span *ngIf="activeChatUserId !== user.uid" class="un-msg-text">new</span>
+                    </ng-container>
+
+                    <!-- ((status.lastChanged | date :
+                            'shortTime'))}}-->
+
+                    <!-- {{getUnreadCountForUser(user)}} -->
                 </div>
+            </div>
+            }@else {
+            <div *ngIf = "isUserListLoading == false" class="empty-user-container">
+                <h3 class="empty-title">No User Yet</h3>
+            </div>
             }
 
         </div>
@@ -122,7 +127,7 @@
             </div>
         </div>
 
-        <div  class="chat-box">
+        <div class="chat-box">
             <div class="message-item-container"
                 *ngFor="let m of this.chatService.messages(); let i = index; trackBy: trackByMessageId"
                 [attr.id]="'msg-' + i">
@@ -135,9 +140,13 @@
                 </div>
             </div>
             <div [class.show]="isMessageBox == false" class="empty-title-container">
-                <h3  class="empty-title">No Messages Yet</h3>
+                <h3 class="empty-title">Click on a user to chat</h3>
             </div>
-
+            <div *ngIf="isMessagesLoading" class="d-flex justify-content-center my-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
 
         </div>
 
