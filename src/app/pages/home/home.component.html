@@ -10,49 +10,55 @@
                 <input class="search-input" (input)="searchUserFunc()" [formControl]="searchInput" type="text"
                     name="search" id="" placeholder="Search">
             </div>
-          
-        </div>
 
+        </div>
+ 
         <div class="chat-el-container">
-            <div class="chat-el" *ngFor="let user of signedInUsers; trackBy: trackByUid" (click)="selectUser(user)">
-                <div class="d-flex align-items-center gap-2">
-                    <div class="profile-img-container">
-                        @if(user?.profilePic){
-                        <img class="chat-profile-img" [src]="user?.profilePic" alt="chat user profile image">
-                        }@else {
-                        <span class="profile-icon-span">
-                            <i class="bi bi-person-fill"></i>
-                        </span>
-                        }
-                        <span *ngIf="getUserStatus(user?.uid)?.status == 'online'" class="status-indicator"></span>
+            @if(signedInUsers.length > 0){
+                <div class="chat-el" *ngFor="let user of signedInUsers; trackBy: trackByUid" (click)="selectUser(user)">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="profile-img-container">
+                            @if(user?.profilePic){
+                            <img class="chat-profile-img" [src]="user?.profilePic" alt="chat user profile image">
+                            }@else {
+                            <span class="profile-icon-span">
+                                <i class="bi bi-person-fill"></i>
+                            </span>
+                            }
+                            <span *ngIf="getUserStatus(user?.uid)?.status == 'online'" class="status-indicator"></span>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <h5 class="mb-0 chat-el-title">{{ user?.displayName }}</h5>
+                            <span class="chat-el-desc-text">{{ user?.lastMessage?.text?.slice(0, 10) }}...</span>
+                        </div>
                     </div>
                     <div class="d-flex flex-column">
-                        <h5 class="mb-0 chat-el-title">{{ user?.displayName }}</h5>
-                        <span class="chat-el-desc-text">{{ user?.lastMessage?.text?.slice(0, 10) }}...</span>
+                        <span *ngIf="user.lastMessage?.timeStamp as lastMsg" class="time-text">{{ formatMessageTime(lastMsg)
+                            }}
+                        </span>
+    
+    
+                        <ng-container *ngIf="getUnreadCountForUser(user)">
+    
+                            <span *ngIf="activeChatUserId !== user.uid" class="un-msg-text">new</span>
+                        </ng-container>
+    
+                        <!-- ((status.lastChanged | date :
+                            'shortTime'))}}-->
+    
+                        <!-- {{getUnreadCountForUser(user)}} -->
                     </div>
                 </div>
-                <div class="d-flex flex-column">
-                    <span *ngIf="user.lastMessage?.timeStamp as lastMsg" class="time-text">{{ formatMessageTime(lastMsg)
-                        }}
-                    </span>
-
-
-                    <ng-container *ngIf="getUnreadCountForUser(user)">
-                        
-                        <span *ngIf="activeChatUserId !== user.uid" class="un-msg-text">new</span>
-                    </ng-container>
-
-                    <!-- ((status.lastChanged | date :
-                        'shortTime'))}}-->
-
-                    <!-- {{getUnreadCountForUser(user)}} -->
+            }@else {
+                <div class="empty-user-container">
+                    <h3 class="empty-title">No User Yet</h3>
                 </div>
-            </div>
-            
+            }
+
         </div>
     </div>
-    <div #chatMainContainer class="chat-main-container">
-        <div class="head-ct d-flex justify-content-between align-items-center gap-1">
+    <div #chatMainContainer [class.light]="isMessageBox" class="chat-main-container">
+        <div class="head-ct justify-content-between align-items-center gap-1">
             <div class="d-flex flex-column gap-1">
                 <div class="d-flex align-items-center">
                     <button (click)="showMainPanel()" class="back-btn">
@@ -71,7 +77,8 @@
                                 {{ selectedUser()?.displayName }}
                             </h5>
                             <span *ngIf="getUserStatus(selectedUser()?.uid) as userStatus"
-                                class="duration-sn">{{userStatus.status === 'online' ? 'Online' : (userStatus.lastChanged | hoursAgo) }}</span>
+                                class="duration-sn">{{userStatus.status === 'online' ? 'Online' :
+                                (userStatus.lastChanged | hoursAgo) }}</span>
                         </div>
                     </div>
                 </div>
@@ -99,43 +106,42 @@
                 </div>
             </div>
 
-            <div (click)="open($event)" [class.active] = "isSearchOpen" class="search-func-div">
+            <div (click)="open($event)" [class.active]="isSearchOpen" class="search-func-div">
                 <div class="search-bar-util-search">
-                  <input (keyup.enter)="searchChatFunc(this.chatService.messages())" [formControl]="searchChatInput" type="text" placeholder="Search for Product" />
-                  <button (click)="searchChatFunc(this.chatService.messages())" class="search-icon-span mobile-search-btn">
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        clip-rule="evenodd"
-                        d="M9.93946 9.11412C10.6582 8.21557 11.088 7.0758 11.088 5.83565C11.088 2.93483 8.73646 0.583252 5.83565 0.583252C2.93483 0.583252 0.583252 2.93483 0.583252 5.83565C0.583252 8.73646 2.93483 11.088 5.83565 11.088C7.0758 11.088 8.21557 10.6582 9.11412 9.93946L12.4203 13.2457C12.6482 13.4736 13.0177 13.4736 13.2457 13.2457C13.4736 13.0177 13.4736 12.6482 13.2457 12.4203L9.93946 9.11412ZM5.83565 9.9267C3.57622 9.9267 1.74459 8.09507 1.74459 5.83565C1.74459 3.57622 3.57622 1.74459 5.83565 1.74459C8.09507 1.74459 9.9267 3.57622 9.9267 5.83565C9.9267 8.09507 8.09507 9.9267 5.83565 9.9267Z"
-                        fill="#0F0F0F"
-                      />
-                    </svg>
-                  </button>
+                    <input (keyup.enter)="searchChatFunc(this.chatService.messages())" [formControl]="searchChatInput"
+                        type="text" placeholder="Search for Product" />
+                    <button (click)="searchChatFunc(this.chatService.messages())"
+                        class="search-icon-span mobile-search-btn">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M9.93946 9.11412C10.6582 8.21557 11.088 7.0758 11.088 5.83565C11.088 2.93483 8.73646 0.583252 5.83565 0.583252C2.93483 0.583252 0.583252 2.93483 0.583252 5.83565C0.583252 8.73646 2.93483 11.088 5.83565 11.088C7.0758 11.088 8.21557 10.6582 9.11412 9.93946L12.4203 13.2457C12.6482 13.4736 13.0177 13.4736 13.2457 13.2457C13.4736 13.0177 13.4736 12.6482 13.2457 12.4203L9.93946 9.11412ZM5.83565 9.9267C3.57622 9.9267 1.74459 8.09507 1.74459 5.83565C1.74459 3.57622 3.57622 1.74459 5.83565 1.74459C8.09507 1.74459 9.9267 3.57622 9.9267 5.83565C9.9267 8.09507 8.09507 9.9267 5.83565 9.9267Z"
+                                fill="#0F0F0F" />
+                        </svg>
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div class="chat-box">
-            <div class="message-item-container" *ngFor="let m of this.chatService.messages(); let i = index; trackBy: trackByMessageId" [attr.id] = "'msg-' + i">
+        <div  class="chat-box">
+            <div class="message-item-container"
+                *ngFor="let m of this.chatService.messages(); let i = index; trackBy: trackByMessageId"
+                [attr.id]="'msg-' + i">
                 <div [ngClass]="isCurrentUser(m.senderId)  ? 'message-item sent' : 'message-item received' ">
                     <span class="email-txt">{{m.email}}</span>
                     <div class="d-flex justify-content-between gap-1">
                         <span class="message-txt">{{m.text}}</span>
-                        <span class = "msg-timestamp">{{m.timeStamp | timeAgo}}</span>
+                        <span class="msg-timestamp">{{m.timeStamp | timeAgo}}</span>
                     </div>
                 </div>
             </div>
+            <div [class.show]="isMessageBox == false" class="empty-title-container">
+                <h3  class="empty-title">No Messages Yet</h3>
+            </div>
+
 
         </div>
 
-        <div [class.show] = "isMessageBox" class="message-box">
+        <div [class.show]="isMessageBox" class="message-box">
             <div class="message-input-container">
                 <button class="doc-btn">
                     <i class="bi bi-paperclip rotate-45"></i>

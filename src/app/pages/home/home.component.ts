@@ -72,7 +72,7 @@ export class HomeComponent implements OnInit {
 
 
       // Optional: Load previous messages
-      this.getMessages();
+      // this.getMessages();
       // if (user) {
       //   this.signedInUsersFunc().then((data) => {
       //     this.getMessages()
@@ -200,7 +200,7 @@ export class HomeComponent implements OnInit {
     this.ctMainContainer.nativeElement.classList.remove("slideOut")
 
     this.isMessageBox = true
-    this.clickChatVisibility(user)
+    // this.clickChatVisibility(user)
     this.selectedUser.set(user);
     this.receiverId.set(user.uid)
     const sender = this.senderId()
@@ -208,7 +208,6 @@ export class HomeComponent implements OnInit {
 
     if (sender && receiver) {
       this.getMessages()
-      console.log(this.chatService.messages())
 
     }
     const userRef = doc(this.db, `users/${this.senderId()}`);
@@ -222,8 +221,6 @@ export class HomeComponent implements OnInit {
 
   async clickChatVisibility(user: any) {
     this.activeChatUserId = user?.uid
-
-
     this.openChatWith(user)
 
   }

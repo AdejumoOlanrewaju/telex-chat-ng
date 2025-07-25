@@ -52,6 +52,9 @@
     gap: 10px;
     height: calc(100% - 122px);
     overflow-y: auto;
+    overflow: hidden;
+    transition: none;
+    /* or smoother easing */
 }
 
 .chat-el {
@@ -105,8 +108,16 @@
     /* background-color: rgb(147 147 147 / 27%); */
     display: flex;
     flex-direction: column;
-    height : 100dvh
+    height: 100dvh;
+    /* justify-content : center; */
+    /* align-items: center; */
 }
+
+/* .chat-main-container.light{
+    background-color: white;
+     justify-content : unset;
+    align-items: unset;
+} */
 
 .chat-main-container .head-ct {
     height: 70px;
@@ -114,7 +125,12 @@
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.403); */
     background-color: rgb(147 147 147 / 20%);
     position: relative;
+    display : flex;
 }
+
+/* .chat-main-container .head-ct.show{
+    display : flex
+} */
 
 .head-cta-container {
     background-color: rgb(0 0 0 / 13%);
@@ -180,6 +196,38 @@
     gap: 22px;
     min-height: 0;
     /* Important for flex children to grow/shrink */
+}
+
+.chat-box.show{
+    display : flex;
+}
+
+.empty-title-container, .empty-user-container{
+    background-color: #05459559;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    border-radius: 12px;
+}
+
+.empty-user-container{
+    display: flex;
+}
+
+.empty-title-container.show{
+    display: flex;
+}
+
+.empty-title{
+    font-size: clamp(2.8rem, 1.2vw, 2rem);
+    color : white;
+    margin: 0;
+    text-align: center;
+}
+
+.empty-user-container .empty-title{
+    font-size: 2.4rem;
 }
 
 .message-item {
