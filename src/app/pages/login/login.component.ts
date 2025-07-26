@@ -75,10 +75,7 @@ export class LoginComponent {
 
       // Show user-friendly error message
       const errorMessage = this.getFirebaseErrorMessage(error?.message);
-      this.snackBar.open(errorMessage, "ok", {
-        duration: 6000,
-        panelClass: ['snackbar-error']
-      });
+      this.alertService.showError(errorMessage, 6000)
     } finally {
       this.loading = false;
     }

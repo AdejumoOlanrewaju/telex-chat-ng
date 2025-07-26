@@ -1,59 +1,122 @@
-# ChatApp
+# 💬 TelexChat
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.7.
+**TelexChat** is a real-time chat application built with **Angular** and **Firebase**. It features authentication, email verification, real-time messaging, online/offline presence, chat search, and a polished modern UI. Perfect as a Firebase-based starter chat app.
 
-## Development server
+---
 
-To start a local development server, run:
+## ✨ Features
+
+- 🔐 Firebase Email/Password Authentication with Email Verification
+- 💬 Real-time Chat with Firestore
+- 🟢 Online/Offline Presence (Firebase Realtime Database)
+- 🔍 Chat and User Search
+- 🖼️ Profile Picture on Signup
+- 📩 Forgot Password (Password Reset)
+- 🕓 Human-friendly Timestamps (`Just now`, `Yesterday`, etc.)
+- 📱 Mobile-responsive UI (works on different screen sizes)
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Angular 17+, Angular Signals
+- **Backend**: Firebase (Auth, Firestore, Realtime Database)
+- **UI**: Bootstrap 5 (for some components), CSS3 Animations
+- **Utilities**: Firebase SDK, Angular Material Snackbar
+
+---
+
+## 🔧 Configuration
+
+Firebase configuration is handled in the file:
+
+```
+src/app/app.config.ts
+```
+
+Replace the values with your Firebase project credentials:
+
+```ts
+export const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID",
+  measurementId: "YOUR_MEASUREMENT_ID"
+};
+```
+
+---
+
+## 🚀 Getting Started
+
+1. **Clone the Repository**
+
+```bash
+git clone https://github.com/your-username/telexchat.git
+cd telexchat
+```
+
+2. **Install Dependencies**
+
+```bash
+npm install
+```
+
+3. **Run the App**
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navigate to `http://localhost:4200/` in your browser.
 
-## Code scaffolding
+---
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 📁 Folder Structure
 
-```bash
-ng generate component component-name
+```
+src/
+├── app/
+│   ├── components/
+│   ├── services/
+│   ├── pipes/
+│   ├── pages/
+│   │   ├── login/
+│   │   ├── register/
+│   │   ├── chat/
+│   │   ├── forgot-password/
+│   ├── app.config.ts   ← Firebase config here
+│   └── app.routes.ts
+└── assets/
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
+
+## 📦 Build
+
+To build the project for production:
 
 ```bash
-ng generate --help
+ng build --configuration production
 ```
 
-## Building
+Deploy the `dist/` folder to your hosting platform (e.g., Firebase Hosting, Vercel).
 
-To build the project run:
+---
 
-```bash
-ng build
-```
+## 🛒 Selling This Project?
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+You can:
 
-## Running unit tests
+- Sell this template on marketplaces (like Gumroad, CodeCanyon)
+- Offer setup/customization as a **Fiverr** gig
+- Use it as a base for more advanced messaging products
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+---
 
-```bash
-ng test
-```
+## 🙋‍♂️ Support or Questions
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Open an issue or contact me if you need help or want to collaborate.
