@@ -255,6 +255,7 @@ export class HomeComponent implements OnInit {
       console.log('No message found');
       this.alertService.showError("No message found", 100000);
     }
+    this.searchChatInput.reset()
   }
 
   // Format message timestamp for UI display
