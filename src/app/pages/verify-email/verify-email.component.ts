@@ -22,11 +22,12 @@ export class VerifyEmailComponent {
       const user = this.auth.currentUser;
       if (user && !user.emailVerified) {
         await sendEmailVerification(user);
-        this.alertService.showInfo('Verification email sent.', 4000)
+        this.alertService.showInfo('Verification link has been sent.', 6000)
       }
 
     }catch(err){
       console.error(err)
+            this.alertService.showError("Error sending verification link. Please try again.", 6000)
     }finally{
       this.loading = false
     }

@@ -146,9 +146,9 @@ export class HomeComponent implements OnInit {
         this.messageUnsbscribers.push(unsub);
       });
       this.allUsers = users;
-      this.isUserListLoading = false;
     });
     this.messageUnsbscribers.push(unsubscribe);
+    this.isUserListLoading = false;
     return this.allUsers;
   }
 

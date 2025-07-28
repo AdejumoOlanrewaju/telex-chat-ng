@@ -19,7 +19,7 @@
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            @if(signedInUsers?.length > 0){
+            @if(allUsers.length > 0){
             <div class="chat-el" *ngFor="let user of signedInUsers; trackBy: trackByUid" (click)="selectUser(user)">
                 <div class="d-flex align-items-center gap-2">
                     <div class="profile-img-container">
