@@ -1,6 +1,8 @@
 .form-page {
     /* background: linear-gradient(45deg, #005C97, #363795) */
     background-color: var(--primary-color-dark-1);
+    min-height: 100vh;
+    padding: 30px 0px;
 }
 
 .form-wrapper {
