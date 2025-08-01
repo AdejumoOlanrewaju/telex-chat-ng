@@ -4,14 +4,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    padding : 20px 15px;
 }
 
 .page-content {
     background-color: white;
-    padding: 0px 20px;
+    padding: 30px 20px 40px;
     text-align: center;
     display: flex;
-    height: 70vh;
+    min-height: 70vh;
     border-radius: 10px;
     width: 90%;
     align-items: center;
@@ -51,7 +52,7 @@
     color: white;
 }
 
-.verify-cta:disabled{
+.verify-cta:disabled {
     opacity: .5;
 }
 
@@ -64,14 +65,14 @@
     color: var(--primary-color);
 }
 
-.login-cta:hover{
+.login-cta:hover {
     background-color: var(--primary-color);
-    color : white
+    color: white
 }
 
-@media(max-width : 500px){
-    .page-content .img-banner{
-        width : 240px;
-        height : 240px;
+@media(max-width : 500px) {
+    .page-content .img-banner {
+        width: 240px;
+        height: 240px;
     }
 }
